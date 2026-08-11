@@ -29,18 +29,44 @@ cd Minden-Meshtastic-Pilot
   HTML near the bottom of the file, after the `<style>` block. You do not need to touch
   the CSS.
 
+## Getting started with your first node
+
+Works for any Meshtastic device (Wio Tracker L1 Pro, Heltec, etc.), whether you're
+bringing it up as a handheld or tethering it to a PC / Raspberry Pi.
+
+1. **Flash Meshtastic** at <https://flasher.meshtastic.org> (Chrome/Edge — needs
+   WebSerial). Choose region **US (915 MHz)**. This is the one setting that must be
+   right or the node hears nothing.
+2. **Talk to it.** Either pair the **Meshtastic phone app** over Bluetooth, or plug it
+   into a computer over USB and drive it from the CLI:
+   ```bash
+   pipx install meshtastic          # or: pip install meshtastic
+   meshtastic --info                # see the node
+   meshtastic --set lora.region US  # if not already set
+   meshtastic --sendtext "hello mesh"
+   meshtastic --nodes               # who's out there
+   ```
+   On a PC/Pi the node shows up as `/dev/ttyUSB0` or `/dev/ttyACM0`.
+3. **Attach the antenna before powering on** — transmitting with no antenna can damage
+   the radio.
+4. **Two nodes = a link; three = a real mesh.** Set two nodes ~15 ft apart (not
+   touching — too close overloads them), confirm each appears in the other's node list,
+   text both ways, then walk one off to find your real range.
+
+For the pole repeater specifically (parts, assembly, ROUTER-role config), see
+`REPEATER-BUILD.md`. For hardware choice and ordering gotchas, see `HARDWARE.md`.
+
 ## Fields still to fill in
 
-The proposal has four placeholders left, each wrapped in a `<mark>…</mark>` tag and
+The proposal has three placeholders left, each wrapped in a `<mark>…</mark>` tag and
 written in `[square brackets]` so they're easy to find (they render highlighted):
 
 - `[Meeting Date]`
-- `[siren location / cross-streets]`
 - `[phone]`
 - `[email]`
 
 Search the file for `[` to jump to them. Everything else — name (Aaron K. Clark),
-city, department, title, cost table — is already filled.
+city, department, title, siren location (3rd & Hubbard), cost table — is already filled.
 
 ## Notes for the pilot itself
 
