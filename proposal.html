@@ -1,0 +1,364 @@
+<title>Emergency Communications Relay Pilot — Council Proposal</title>
+<style>
+  :root {
+    --paper:    #f7f5f1;
+    --surface:  #ffffff;
+    --ink:      #1b1e24;
+    --muted:    #59616e;
+    --primary:  #22303f;
+    --accent:   #a8342a;
+    --accent-ink:#8f2b22;
+    --callout:  #f3ece6;
+    --hairline: #e2ddd3;
+    --focus:    #a8342a;
+    --shadow:   0 1px 2px rgba(27,30,36,.06), 0 8px 24px rgba(27,30,36,.05);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper:    #13161b;
+      --surface:  #1b1f26;
+      --ink:      #e8e6e1;
+      --muted:    #9aa2ae;
+      --primary:  #c6d4e2;
+      --accent:   #e0685a;
+      --accent-ink:#ea7d70;
+      --callout:  #21262f;
+      --hairline: #2a2f39;
+      --focus:    #e0685a;
+      --shadow:   0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:    #13161b;
+    --surface:  #1b1f26;
+    --ink:      #e8e6e1;
+    --muted:    #9aa2ae;
+    --primary:  #c6d4e2;
+    --accent:   #e0685a;
+    --accent-ink:#ea7d70;
+    --callout:  #21262f;
+    --hairline: #2a2f39;
+    --focus:    #e0685a;
+    --shadow:   0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  }
+
+  .sheet {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.15rem, 5vw, 3.25rem) 4rem;
+  }
+
+  /* ---- Fill-in banner ---- */
+  .fillin {
+    display: flex;
+    gap: .7rem;
+    align-items: baseline;
+    background: var(--callout);
+    border: 1px dashed var(--accent);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 2.4rem;
+  }
+  .fillin b { color: var(--accent-ink); }
+  mark {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent-ink);
+    padding: 0 .28em;
+    border-radius: 3px;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  /* ---- Masthead ---- */
+  header.mast { margin-bottom: 2.6rem; }
+  .eyebrow {
+    font-size: .72rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    font-weight: 650;
+    color: var(--accent);
+    margin: 0 0 .9rem;
+  }
+  h1.title {
+    font-weight: 600;
+    font-size: clamp(1.9rem, 5.4vw, 2.85rem);
+    line-height: 1.08;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    margin: 0 0 .85rem;
+    color: var(--primary);
+  }
+  .standfirst {
+    font-size: 1.12rem;
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 34rem;
+    margin: 0 0 1.7rem;
+    text-wrap: pretty;
+  }
+  .rule {
+    height: 3px;
+    width: 100%;
+    background: var(--accent);
+    border: 0;
+    margin: 0 0 1.4rem;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: .9rem 1.4rem;
+    font-size: .84rem;
+  }
+  .meta div { display: flex; flex-direction: column; gap: .15rem; }
+  .meta dt {
+    font-size: .68rem;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 650;
+  }
+  .meta dd { margin: 0; color: var(--ink); font-weight: 500; }
+
+  /* ---- Sections ---- */
+  section { margin-top: 2.7rem; }
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: .7rem;
+    font-weight: 600;
+    font-size: 1.32rem;
+    letter-spacing: -.005em;
+    color: var(--primary);
+    margin: 0 0 .85rem;
+    text-wrap: balance;
+  }
+  h2 .num {
+    font-family: system-ui, sans-serif;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    padding-top: .12rem;
+    min-width: 1.7rem;
+  }
+  h2 .num::after { content: ""; }
+  p { margin: 0 0 1rem; }
+  p:last-child { margin-bottom: 0; }
+  strong { font-weight: 650; color: var(--ink); }
+
+  ul.clean { list-style: none; margin: 0 0 1rem; padding: 0; display: flex; flex-direction: column; gap: .6rem; }
+  ul.clean li { position: relative; padding-left: 1.4rem; }
+  ul.clean li::before {
+    content: "";
+    position: absolute;
+    left: .1rem; top: .62em;
+    width: .42rem; height: .42rem;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* ---- Cost table ---- */
+  .table-wrap { overflow-x: auto; margin: .3rem 0 1rem; border: 1px solid var(--hairline); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; min-width: 24rem; }
+  caption { text-align: left; caption-side: bottom; font-size: .8rem; color: var(--muted); padding: .7rem .1rem 0; }
+  th, td { text-align: left; padding: .68rem .95rem; border-bottom: 1px solid var(--hairline); }
+  thead th {
+    font-size: .68rem; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 650; background: var(--callout);
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tr.total td { font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  tr.total td { border-top: 2px solid var(--accent); }
+
+  /* ---- Callout (ethics) ---- */
+  .callout {
+    background: var(--callout);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 1.15rem 1.3rem;
+    margin: .4rem 0 1rem;
+    box-shadow: var(--shadow);
+  }
+  .callout h2 { margin-top: 0; }
+  .callout .tag {
+    display: inline-block;
+    font-size: .66rem; letter-spacing: .12em; text-transform: uppercase;
+    font-weight: 700; color: var(--surface); background: var(--accent);
+    padding: .18rem .55rem; border-radius: 999px; margin-bottom: .7rem;
+  }
+
+  /* ---- The ask ---- */
+  .ask {
+    background: var(--primary);
+    color: #f3f4f6;
+    border-radius: 12px;
+    padding: 1.5rem 1.6rem;
+    margin-top: .5rem;
+    box-shadow: var(--shadow);
+  }
+  .ask h2 { color: #fff; }
+  .ask h2 .num { color: #f0a99f; }
+  .ask p { color: #d6dbe2; }
+  .ask strong { color: #fff; }
+
+  /* ---- Signature ---- */
+  .sign {
+    margin-top: 3rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--hairline);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1.2rem;
+    font-size: .86rem;
+  }
+  .sign dt { font-size: .66rem; letter-spacing: .11em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin-bottom: .2rem; }
+  .sign dd { margin: 0; }
+  .sign .line { margin-top: 1.6rem; border-bottom: 1px solid var(--ink); height: 1px; }
+
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+
+  @media print {
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .fillin { display: none; }
+    .sheet { max-width: none; padding: 0; }
+    .ask, .callout, .table-wrap, tr.total td { box-shadow: none; }
+    section { break-inside: avoid; }
+  }
+</style>
+
+<div class="sheet">
+
+  <div class="fillin">
+    <b>Before you present:</b>
+    <span>replace every <mark>highlighted field</mark> with your real details — name, city, department, dates, and the pole location. Everything else is ready to read or adapt.</span>
+  </div>
+
+  <header class="mast">
+    <p class="eyebrow">Proposal to the Minden City Council</p>
+    <h1 class="title serif">A Zero-Cost Pilot for Resilient Emergency Communications</h1>
+    <p class="standfirst">Adding an off-grid radio relay to an existing tornado-siren pole so first responders and residents stay connected when cellular and power infrastructure fail — equipment donated, co-located on emergency infrastructure the city already maintains.</p>
+    <hr class="rule">
+    <dl class="meta">
+      <div><dt>Submitted by</dt><dd>Aaron K. Clark, Volunteer EMT</dd></div>
+      <div><dt>Department</dt><dd>Minden Fire Department — EMS</dd></div>
+      <div><dt>Date</dt><dd><mark>[Meeting Date]</mark></dd></div>
+      <div><dt>City cost</dt><dd>Equipment donated; install by city crew</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2><span class="num">1</span>The request, in one sentence</h2>
+    <p>I am asking the Council to authorize a <strong>single-site pilot</strong>: permission to mount one small, solar-powered emergency-communications relay on an existing city-owned <strong>tornado-siren pole</strong> at <mark>[siren location / cross-streets]</mark>. I will purchase all equipment at my own expense and donate it to the city; installation would be performed by a city crew using the bucket truck, ideally folded into routine siren maintenance. The relay would be city property and serve the fire department's emergency-communications needs.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>The gap this closes</h2>
+    <p>Our emergency response depends on infrastructure that fails in exactly the moments we need it most. Cellular networks congest or go dark in a major storm, flood, or wildfire; the towers themselves lose power once backup batteries drain. When that happens, coordination between responders and the ability to reach isolated residents degrades precisely when lives are on the line.</p>
+    <p>The city has no independent, off-grid communications layer that keeps working when the grid does not. This pilot introduces one — cheaply, and without touching a single existing system.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>The proposed solution</h2>
+    <p>The relay uses <strong>Meshtastic</strong>, an open-source system built on long-range <strong>LoRa</strong> radio. It operates in the license-free 900&nbsp;MHz band — <strong>FCC Part 15, no license required, no interference with public-safety radio</strong>. Key properties for municipal use:</p>
+    <ul class="clean">
+      <li><strong>Off-grid and self-powered.</strong> A small solar panel and battery run the node indefinitely with no connection to the power grid and no metered draw.</li>
+      <li><strong>No recurring cost.</strong> No SIM cards, no data plans, no subscriptions. Once installed, operating cost is effectively zero.</li>
+      <li><strong>Long range from elevation.</strong> Mounted high on a pole with clear line of sight, a single relay can cover several kilometers, linking handheld units carried by responders across town.</li>
+      <li><strong>Encrypted and self-healing.</strong> Messages are AES-encrypted and hop automatically between nodes, so the network routes around a failed link as it grows.</li>
+      <li><strong>Co-located with existing warning infrastructure.</strong> Mounting on a siren pole puts the relay on a tall, well-sited structure the city already owns and services — adding emergency <em>communications</em> to a pole that already carries emergency <em>alerting</em>.</li>
+      <li><strong>Extensible.</strong> One relay is the seed of a wider low-cost network — additional nodes, remote sensors (water levels, gauges), and neighboring-agency links can be added over time.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>Itemized cost — borne entirely by me</h2>
+    <div class="table-wrap">
+      <table>
+        <caption>Estimated one-time equipment cost. Figures are planning estimates and may vary by vendor. Recurring cost to the city: <strong>$0</strong>.</caption>
+        <thead>
+          <tr><th scope="col">Item</th><th scope="col" class="num">Est. cost</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Solar relay node (LoRa radio + low-power controller, 915&nbsp;MHz)</td><td class="num">$55</td></tr>
+          <tr><td>Solar panel &amp; charge management (10&nbsp;W)</td><td class="num">$45</td></tr>
+          <tr><td>Rechargeable battery pack</td><td class="num">$25</td></tr>
+          <tr><td>Weatherproof (IP67) enclosure &amp; cable glands</td><td class="num">$35</td></tr>
+          <tr><td>Gain antenna, coax &amp; mounting hardware</td><td class="num">$85</td></tr>
+          <tr><td>Two handheld field units for responders</td><td class="num">$70</td></tr>
+          <tr><td>Contingency</td><td class="num">$35</td></tr>
+          <tr class="total"><td>Total equipment (donated by me)</td><td class="num">~$350</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The only cost to the city is <strong>in-kind labor</strong>: a short bucket-truck visit by a city crew to mount the unit. I've named this openly rather than call the pilot &ldquo;free&rdquo; — it is best scheduled alongside routine siren maintenance so the marginal time is minimal.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>Installation, safety &amp; the siren</h2>
+    <ul class="clean">
+      <li><strong>The siren comes first, always.</strong> The relay is entirely separate from the siren and its control system — its own solar power, its own antenna, no shared wiring. Placement and mounting will be set so nothing interferes with the siren's operation, activation signal, or servicing. If any conflict is ever found, the relay yields.</li>
+      <li><strong>Installation:</strong> performed by a city crew with the bucket truck, on the city's schedule — ideally combined with a routine siren-maintenance visit. This is a non-energized pole, so the work is straightforward and low-risk. I will not perform pole work myself.</li>
+      <li><strong>Ownership:</strong> the equipment becomes city property upon installation, documented by a brief memorandum of understanding, with agreed terms for maintenance and for removal if the pilot is discontinued.</li>
+      <li><strong>Footprint:</strong> compact, weatherproof, and passive — no moving parts, no grid connection, no ongoing draw on city resources.</li>
+    </ul>
+  </section>
+
+  <div class="callout">
+    <span class="tag">Disclosed proactively</span>
+    <h2 style="font-size:1.18rem"><span class="num" style="min-width:auto">✶</span>Conflict-of-interest disclosure</h2>
+    <p>In the interest of full transparency: I serve the city as an <strong>unpaid volunteer EMT</strong> with no procurement authority or financial control, and one candidate coverage area for the relay is on or adjacent to property I own — meaning I could incidentally benefit from improved coverage there.</p>
+    <p>I am raising this <strong>before any purchase or installation</strong> and ask that the proposal be reviewed through the city's ethics and procurement process so the arrangement is documented and approved on the record. I am glad to use an alternate city-selected site if that removes any concern.</p>
+  </div>
+
+  <section>
+    <h2><span class="num">6</span>Phase 2 — where a successful pilot leads</h2>
+    <p>This pilot is deliberately small: one donated node, to prove the capability at no capital cost. If it performs, it becomes the evidence base for a funded expansion — <strong>and expansion is where outside money, not the city's, does the work.</strong></p>
+    <p>Resilient emergency communications is exactly the category that disaster- and preparedness-grant programs are written to fund. A proven pilot is a far stronger grant application than a proposal on paper. Routes worth exploring with the department and emergency management:</p>
+    <ul class="clean">
+      <li><strong>FEMA preparedness &amp; hazard-mitigation grants</strong> (e.g. EMPG, HMGP) — commonly cover resilient-communications equipment for local agencies.</li>
+      <li><strong>State homeland-security and emergency-management grants</strong> — routinely fund interoperable and backup communications.</li>
+      <li><strong>Regional / county emergency-management</strong> cost-sharing, since a mesh naturally links neighboring jurisdictions.</li>
+    </ul>
+    <p>A funded Phase 2 would add relays on additional siren poles and high points for genuine citywide, self-healing coverage — and because the department would pursue the grant, the expansion carries no personal-funding entanglement at all. The pilot's job is simply to earn that next step.</p>
+  </section>
+
+  <div class="ask">
+    <h2><span class="num">7</span>Requested action</h2>
+    <p>That the Council <strong>authorize a pilot</strong> permitting a city crew to install one donated, city-owned emergency-communications relay on the identified tornado-siren pole — subject to ethics/procurement review, a memorandum of understanding on ownership and removal, and confirmation that it will not interfere with the siren — with a defined review period after which the Council may continue, pursue grant-funded expansion, or end the pilot.</p>
+  </div>
+
+  <dl class="sign">
+    <div>
+      <dt>Respectfully submitted</dt>
+      <dd>Aaron K. Clark<br>Volunteer EMT, Minden Fire Department</dd>
+    </div>
+    <div>
+      <dt>Contact</dt>
+      <dd><mark>[phone]</mark><br><mark>[email]</mark></dd>
+    </div>
+    <div>
+      <dt>Signature</dt>
+      <dd><div class="line"></div></dd>
+    </div>
+  </dl>
+
+</div>
