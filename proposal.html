@@ -286,8 +286,10 @@
       <li><strong>Long range from elevation.</strong> Mounted high on a pole with clear line of sight, a single relay can cover several kilometers, linking handheld units carried by responders across town.</li>
       <li><strong>Encrypted and self-healing.</strong> Messages are AES-encrypted and hop automatically between nodes, so the network routes around a failed link as it grows.</li>
       <li><strong>Co-located with existing warning infrastructure.</strong> Mounting on a siren pole puts the relay on a tall, well-sited structure the city already owns and services — adding emergency <em>communications</em> to a pole that already carries emergency <em>alerting</em>.</li>
+      <li><strong>Group and private messaging.</strong> A node can broadcast to a shared channel everyone hears — an all-call to the whole response — <em>and</em> send a radio-to-radio direct message privately to a single unit. Both are AES-encrypted.</li>
       <li><strong>Extensible.</strong> One relay is the seed of a wider low-cost network — additional nodes, remote sensors (water levels, gauges), and neighboring-agency links can be added over time.</li>
     </ul>
+    <p><strong>&ldquo;Why Meshtastic and not one of the alternatives?&rdquo;</strong> There is a newer competing system called MeshCore. Meshtastic is the deliberate choice: it has by far the <strong>largest and most mature community</strong>, the widest selection of supported hardware and apps, and it is the de-facto standard — which means easy support, easy-to-source replacement parts, and interoperability with any neighboring agencies or residents already running it. MeshCore's one edge is more efficient routing on very large, very dense networks — a benefit that only shows up at a scale far beyond this pilot. For a small, long-lived municipal deployment, the mature and widely-supported option is the safer, more sustainable bet.</p>
   </section>
 
   <section>
@@ -299,18 +301,18 @@
           <tr><th scope="col">Item</th><th scope="col" class="num">Est. cost</th></tr>
         </thead>
         <tbody>
-          <tr><td>Relay node &mdash; Seeed Wio Tracker L1&nbsp;Pro (radio, battery &amp; solar input built in, US 915&nbsp;MHz)</td><td class="num">$47</td></tr>
+          <tr><td>Relay node &mdash; Seeed Wio Tracker L1&nbsp;Pro (radio, battery &amp; solar input built in, US 915&nbsp;MHz)</td><td class="num">$53</td></tr>
           <tr><td>Solar panel (~10&nbsp;W) with charge management &amp; mount</td><td class="num">$40</td></tr>
           <tr><td>External gain antenna, coax &amp; pole mount</td><td class="num">$55</td></tr>
           <tr><td>Weatherproof enclosure &amp; cable glands</td><td class="num">$23</td></tr>
           <tr><td>Contingency</td><td class="num">$15</td></tr>
-          <tr class="total"><td>Total equipment (donated by me)</td><td class="num">~$180</td></tr>
+          <tr class="total"><td>Total equipment (donated by me)</td><td class="num">~$186</td></tr>
         </tbody>
       </table>
     </div>
     <p>The only cost to the city is <strong>in-kind labor</strong>: a short bucket-truck visit by a city crew to mount the unit. I've named this openly rather than call the pilot &ldquo;free&rdquo; — it is best scheduled alongside routine siren maintenance so the marginal time is minimal.</p>
 
-    <p><strong>Optional — field units for responders.</strong> The relay is useful on its own, but its value grows when responders carry portable radios that talk through it. These are entirely the city's option and are <em>not</em> part of the donated pilot. The recommended unit is the <strong>Seeed Wio Tracker L1&nbsp;Pro (Meshtastic edition), about $47 each</strong> — a ready-to-use handheld, no assembly:</p>
+    <p><strong>Optional — field units for responders.</strong> The relay is useful on its own, but its value grows when responders carry portable radios that talk through it. These are entirely the city's option and are <em>not</em> part of the donated pilot. The recommended unit is the <strong>Seeed Wio Tracker L1&nbsp;Pro (Meshtastic edition), about $53 each — roughly $57 delivered</strong> — a ready-to-use handheld, no assembly:</p>
     <ul class="clean">
       <li>Screen and joystick — read and send messages on the device itself, no phone required</li>
       <li><strong>Built-in GPS</strong> — each unit can share a responder's live location on the mesh, so incident command can see where crews are during an event</li>
