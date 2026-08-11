@@ -272,8 +272,9 @@
 
   <section>
     <h2><span class="num">2</span>The gap this closes</h2>
-    <p>Our emergency response depends on infrastructure that fails in exactly the moments we need it most. Cellular networks congest or go dark in a major storm, flood, or wildfire; the towers themselves lose power once backup batteries drain. When that happens, coordination between responders and the ability to reach isolated residents degrades precisely when lives are on the line.</p>
-    <p>The city has no independent, off-grid communications layer that keeps working when the grid does not. This pilot introduces one — cheaply, and without touching a single existing system.</p>
+    <p>Our emergency response depends on infrastructure that fails in exactly the moments we need it most. In a major storm, flood, or fire, <strong>cellular networks congest and then go dark</strong> as the towers' own backup batteries drain — and radio coverage has dead zones in valleys, rural edges, and inside damaged structures. When that happens, coordination among responders and the ability to reach isolated residents degrades precisely when lives are on the line.</p>
+    <p><strong>&ldquo;But the comm center has a generator.&rdquo;</strong> It does, and that matters — it keeps dispatch powered. But a generator solves a different problem than this pilot does. It cannot keep the <em>cellular network</em> running, so the public and off-duty responders still lose their phones. It does not extend radio <em>coverage</em> by a single foot into the dead zones. And it does not help if the comm center itself is taken out by the very event — a direct tornado, fire, or flood hit leaves one powered building unable to reach anyone. Generators also have limits of their own: finite fuel, start failures, and refueling logistics that collapse in a regional disaster.</p>
+    <p>What the city lacks is a <strong>distributed, off-grid communications layer with no single point of failure</strong> — one that keeps working when cell service is down, reaches into coverage gaps, and survives the loss of any one site, including dispatch. This pilot introduces exactly that, cheaply, as a complement to existing systems rather than a replacement for any of them.</p>
   </section>
 
   <section>
@@ -311,11 +312,14 @@
 
     <p><strong>Optional — field units for responders.</strong> The relay is useful on its own, but its value grows when responders carry portable radios that talk through it. These are entirely the city's option and are <em>not</em> part of the donated pilot. The recommended unit is the <strong>Seeed Wio Tracker L1&nbsp;Pro (Meshtastic edition), about $47 each</strong> — a ready-to-use handheld, no assembly:</p>
     <ul class="clean">
-      <li>Built-in GPS, screen, and joystick — usable on its own without a phone</li>
+      <li>Screen and joystick — read and send messages on the device itself, no phone required</li>
+      <li><strong>Built-in GPS</strong> — each unit can share a responder's live location on the mesh, so incident command can see where crews are during an event</li>
       <li>Rechargeable battery good for several days per charge, with USB-C and solar charging</li>
       <li>Rugged case; works out of the box on US 915&nbsp;MHz</li>
     </ul>
     <p>The department could equip as few or as many responders as it wishes, at whatever pace suits the budget. I am funding my own unit regardless; this line simply lets the city buy in at any scale it chooses, or none at all while it evaluates the relay.</p>
+
+    <p><strong>An everyday community benefit, too.</strong> The value isn't only for disasters. Once the network exists, the same inexpensive handhelds give families a way to stay in touch with their children — text messages and GPS location, with <strong>no cell phone, no SIM, and no monthly bill</strong> — anywhere the community mesh reaches. For parents who want to let their kids roam a little more freely, it's a low-cost, subscription-free alternative to handing a child a smartphone. Infrastructure the city builds for emergencies quietly earns its keep on ordinary days.</p>
   </section>
 
   <section>
