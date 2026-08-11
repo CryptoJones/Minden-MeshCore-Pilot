@@ -8,6 +8,7 @@ donated; installed by city crew; owned by the city. Includes a grant-funded expa
 
 | File | What it is |
 | --- | --- |
+| `HARDWARE.md` | Recommended node hardware (Seeed Wio Tracker L1 Pro) + getting-started steps |
 | `proposal.html` | The full council proposal — one self-contained HTML page. Open it in any browser to read or print. |
 
 ## Editing the proposal on another machine
