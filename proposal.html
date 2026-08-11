@@ -260,7 +260,7 @@
     <dl class="meta">
       <div><dt>Submitted by</dt><dd>Aaron K. Clark, Volunteer EMT</dd></div>
       <div><dt>Department</dt><dd>Minden Fire Department — EMS</dd></div>
-      <div><dt>Date</dt><dd><mark>[Meeting Date]</mark></dd></div>
+      <div><dt>Date</dt><dd><span id="proposal-date"></span></dd></div>
       <div><dt>City cost</dt><dd>Equipment donated; install by city crew</dd></div>
     </dl>
   </header>
@@ -363,7 +363,7 @@
     </div>
     <div>
       <dt>Contact</dt>
-      <dd><mark>[phone]</mark><br><mark>[email]</mark></dd>
+      <dd>aaron.clark@milcyber.org</dd>
     </div>
     <div>
       <dt>Signature</dt>
@@ -372,3 +372,10 @@
   </dl>
 
 </div>
+
+<script>
+  // The "Date" field fills in with today's date whenever the proposal is opened
+  // or printed — so a printed copy always carries the date it was actually run.
+  document.getElementById("proposal-date").textContent =
+    new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+</script>
