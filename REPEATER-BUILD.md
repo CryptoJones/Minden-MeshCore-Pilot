@@ -1,6 +1,6 @@
 # Solar repeater build — Seeed Wio Tracker L1 Pro
 
-Build sheet for the pole-mounted, off-grid Meshtastic relay in the proposal. Built
+Build sheet for the pole-mounted, off-grid MeshCore relay in the proposal. Built
 around the **Seeed Wio Tracker L1 Pro** because its nRF52840 sips power, and it already
 bundles the radio, battery, and solar input — so the whole node is one ~$47 device.
 
@@ -13,13 +13,13 @@ bundles the radio, battery, and solar input — so the whole node is one ~$47 de
 
 | Part | Est. | Notes |
 | --- | --- | --- |
-| Seeed Wio Tracker L1 Pro (Meshtastic, US 915 MHz) | $47 | radio + 2000 mAh battery + solar input in one unit |
-| Solar panel ~10 W, weatherproof, with charge management | $40 | sized for 24/7 unattended through cloudy stretches — bigger than the unit's built-in trickle input |
+| Seeed Wio Tracker L1 Pro (MeshCore edition, US 915 MHz) | $48 | radio + 2000 mAh battery + solar input in one unit |
+| Solar panel, **5–6 V** nominal, ~5–10 W, rigid & weatherproof | $40 | sized for 24/7 unattended through cloudy stretches. **Must be a 5 V panel, not the usual 12/18 V** — see the voltage warning under Assembly |
 | External gain antenna (915 MHz fiberglass, ~5–6 dBi) + low-loss coax + pole mount | $55 | **this is what gives the pole its range** — the unit's stock whip is for handheld use |
 | Weatherproof enclosure + cable glands | $23 | for permanent outdoor mounting + sealed cable entries |
 | Contingency | $15 | |
 
-Get the **Meshtastic** edition (not Meshcore) and confirm **US 915 MHz** — see `HARDWARE.md`.
+Get the **MeshCore** edition (not Meshtastic) and confirm **US 915 MHz** — see `HARDWARE.md`.
 
 ## Why the antenna is the real cost
 
@@ -32,7 +32,8 @@ loss at 915 MHz adds up fast), and keep the electronics in a shaded box lower do
 ## Assembly
 
 1. **Flash + configure first, on the bench** (see Config below) before it ever goes up
-   the pole. Verify it joins the mesh from a second node indoors.
+   the pole. Verify it joins the mesh from a second node indoors. Use **firmware v1.14.1
+   or newer** — older builds cannot do the 2-byte path hashes the state runs.
 2. **Antenna:** disconnect the stock whip; connect the external gain antenna via coax to
    the unit's antenna connector. **Never power the radio with no antenna attached** — it
    can damage the transmitter.
@@ -40,46 +41,105 @@ loss at 915 MHz adds up fast), and keep the electronics in a shaded box lower do
    solar lead in through sealed cable glands. The unit's own case is rugged but is not a
    permanent all-weather mount on its own.
 4. **Solar:** mount the panel facing due south, tilted roughly to your latitude, with a
-   clear sky view. Wire it to the unit's solar/charge input.
+   clear sky view. Wire it to the unit's solar/charge input — **but read the voltage
+   warning below first.**
+
+> ### ⚠ The L1 Pro's solar input is 5 V. Do not exceed it.
+>
+> Seeed's spec is **5 V / 1 A max, "do not exceed 5V"**, on a 2-pin 2.0 mm JST
+> connector. Almost every solar panel sold for outdoor use is **12 V or 18 V nominal**
+> and will read ~22 V open-circuit in cold sun. Connecting one directly to this input
+> destroys the node instantly.
+>
+> Two safe options:
+>
+> - **Buy a 5–6 V panel** sized around 5–10 W and feed the solar input directly. Simplest,
+>   fewest parts, nothing extra to fail inside a sealed box. This is what the $40 budget
+>   line assumes.
+> - **Use a higher-voltage panel with a buck converter** rated for 24 V+ input, stepping
+>   down to 5 V, then into the **USB-C port** rather than the JST solar input. Fine on the
+>   bench; adds a permanent failure point on a pole.
+>
+> The node cannot accept more than **5 W** (5 V × 1 A) no matter what you connect, so a
+> large panel buys nothing. Oversize for cloudy weeks, not for watts the node can't take.
 5. **Mount:** fix the enclosure to the pole **below and clear of the siren**, antenna run
    up the mast to the highest clear point, well away from the siren head and its conduit.
 
-## Config (Meshtastic)
+## Config (MeshCore)
 
-Flash at https://flasher.meshtastic.org (Chrome). Then, from the phone app or the
-`meshtastic` CLI:
+**Flash the Repeater build, not the Companion firmware it ships with.** MeshCore makes
+the role a *firmware choice*, not a setting — a pole relay runs dedicated Repeater
+firmware that has no phone pairing and no user interface, just a serial/mesh admin
+console. Get it from <https://flasher.meshcore.io/seeed-studio-wio-tracker-l1-pro/>
+(Chrome or Edge), or double-tap RST and drag the `.uf2` onto the `TRACKER L1` drive.
 
-- **Region:** `US` (915 MHz). Must match every other node or it hears nothing.
-- **Role:** `ROUTER`. This role is *specifically* for permanently-placed, elevated,
-  good-coverage infrastructure nodes — exactly a pole repeater. It rebroadcasts for the
-  mesh and stays awake to do so. (Do **not** set regular handhelds to ROUTER; it's for
-  infrastructure only. If you want a pure relay that doesn't appear in the node list,
-  `REPEATER` is the alternative — lower overhead, but you lose its telemetry.)
-- **Fixed position:** since the pole never moves, set a **fixed GPS position** once and
-  then disable the live GPS to save power. A repeater doesn't need to keep a live fix.
-- **Channel:** default `LongFast`, or a shared AES key if the mesh should be private.
-
-CLI equivalents:
+Then configure it over USB serial. `pipx install meshcore-cli`, and use `-r` for direct
+repeater mode:
 
 ```bash
-meshtastic --set lora.region US
-meshtastic --set device.role ROUTER
-meshtastic --setlat <lat> --setlon <lon> --setalt <m>   # then disable GPS in the app
-meshtastic --info      # confirm it's configured
+meshcore-cli -r -s /dev/ttyACM0            # interactive repeater console
 ```
+
+Settings that matter:
+
+- **Radio preset:** `set preset us` — the stock US/Canada band plan. A wrong preset is
+  the single most common reason a new node appears dead.
+- **Coding rate 8.** Nebraska runs the stock US preset with CR bumped to 8. Note that CR
+  does **not** have to match between nodes — it travels in each packet's header and the
+  receiver adapts, so a CR 8 node and a CR 5 node hear each other perfectly. CR 8 buys
+  extra reliability on your own marginal links. It is **frequency, bandwidth and
+  spreading factor** that must match the state or the node is deaf.
+- **2-byte path hashes:** `set path.hash.mode 1`. **Watch the off-by-one — mode 1 means
+  2 bytes**, mode 2 means 3 bytes. Requires **firmware v1.14.1 or newer**, on companion
+  nodes as well as repeaters.
+
+  Each hop a packet takes is tagged with a hash of the repeater that relayed it. At
+  1 byte there are only 256 possible values, so in a growing region two repeaters
+  eventually collide and the mesh cannot distinguish their paths. 2 bytes gives 65,536.
+  Nebraska has standardized on 2-byte, which is a sign the state network has outgrown
+  the 1-byte space — exactly the network this pilot wants to be part of.
+
+  This degrades gracefully rather than failing hard: a 2-byte repeater still relays for
+  1-byte nodes. But the region is meant to be uniform, so match it.
+- **Name:** `set name MINDEN-3RD-HUBBARD` — this is what shows up on the statewide map.
+- **Fixed position:** `set lat <lat>` / `set lon <lon>`. The pole never moves, so set it
+  once. This is what puts the relay on the map for everyone else; it is not a live GPS
+  fix and costs nothing to keep.
+- **Admin password:** `password <something-not-the-default>` — this gates remote
+  configuration over the mesh. Set it, and record it somewhere the city has it too.
+  Leaving the default means anyone in radio range can reconfigure the relay.
+- **TX power:** `set tx <dBm>` — leave at the default unless there's a reason.
+
+A repeater periodically broadcasts an *advert* — its name, position, and public key — so
+the rest of the mesh learns it exists and can route through it. That is automatic.
+
+Once it's on the pole you can administer it **over the air** from a companion node
+rather than climbing back up: `meshcore-cli` in client mode, then `to <repeater-name>`
+and the same commands, authenticated with the admin password.
 
 ## Commissioning checklist
 
 - [ ] Joins the mesh from a handheld on the bench before install.
 - [ ] Antenna attached before every power-on.
+- [ ] Solar input measured at **under 5 V** before it is ever connected to the node.
 - [ ] After install, a handheld at a distant point in town can reach the mesh **through**
       the repeater (check hop count / that the repeater relayed).
 - [ ] Battery holds voltage overnight and recovers through a cloudy day — watch it for a
       few days before trusting it unattended.
 - [ ] Nothing on the relay touches or interferes with the siren or its activation.
+- [ ] Admin password changed off the default and recorded where the city has it.
+- [ ] The relay's advert is visible to the wider Nebraska mesh, not just to local nodes —
+      this is the whole point of choosing MeshCore, so confirm it rather than assume it.
 
 ## Where this goes next
 
 One elevated repeater plus handhelds is hub-and-spoke — a mesh, but a shallow one. Adding
 a second elevated node (another siren pole, a water tower, a hilltop) is what gives real
 path redundancy and self-healing. That's the grant-funded Phase 2 in the proposal.
+
+Worth doing early and for free: get the relay onto the **Nebraska mesh community's** map
+and tell them it's coming up. Because the state has standardized on MeshCore, a correctly
+configured Minden repeater joins the existing network rather than starting a private one —
+and their operators are the fastest source of help on coverage, presets, and siting.
+
+*Proudly Made in Nebraska. Go Big Red! 🌽 <https://xkcd.com/2347/>*

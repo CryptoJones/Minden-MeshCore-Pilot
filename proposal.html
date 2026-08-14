@@ -249,7 +249,7 @@
 
   <div class="fillin">
     <b>Before you present:</b>
-    <span>replace every <mark>highlighted field</mark> with your real details — name, city, department, dates, and the pole location. Everything else is ready to read or adapt.</span>
+    <span>this draft is complete — no fields left to fill, and the date sets itself when you open or print it. Do re-check the <mark>cost figures</mark> and the pole location against current reality. This banner does not appear in print.</span>
   </div>
 
   <header class="mast">
@@ -279,17 +279,20 @@
 
   <section>
     <h2><span class="num">3</span>The proposed solution</h2>
-    <p>The relay uses <strong>Meshtastic</strong>, an open-source system built on long-range <strong>LoRa</strong> radio. It operates in the license-free 900&nbsp;MHz band — <strong>FCC Part 15, no license required, no interference with public-safety radio</strong>. The relay itself is a single off-the-shelf, weather-hardened device — a <strong>Seeed Wio Tracker L1&nbsp;Pro</strong>, which packs the radio, battery, and solar charging into one low-power unit — paired with an external mast antenna and solar panel. Key properties for municipal use:</p>
+    <p>The relay uses <strong>MeshCore</strong>, an open-source system built on long-range <strong>LoRa</strong> radio. It operates in the license-free 900&nbsp;MHz band — <strong>FCC Part 15, no license required, no interference with public-safety radio</strong>. The relay itself is a single off-the-shelf, weather-hardened device — a <strong>Seeed Wio Tracker L1&nbsp;Pro</strong>, which packs the radio, battery, and solar charging into one low-power unit — paired with an external mast antenna and solar panel. Key properties for municipal use:</p>
     <ul class="clean">
       <li><strong>Off-grid and self-powered.</strong> A small solar panel and battery run the node indefinitely with no connection to the power grid and no metered draw.</li>
       <li><strong>No recurring cost.</strong> No SIM cards, no data plans, no subscriptions. Once installed, operating cost is effectively zero.</li>
       <li><strong>Long range from elevation.</strong> Mounted high on a pole with clear line of sight, a single relay can cover several kilometers, linking handheld units carried by responders across town.</li>
-      <li><strong>Encrypted and self-healing.</strong> Messages are AES-encrypted and hop automatically between nodes, so the network routes around a failed link as it grows.</li>
+      <li><strong>Compatible with the statewide network.</strong> Nebraska's mesh community has standardized on MeshCore, so a Minden relay is not an isolated island — it is a node on a network that already extends across the state, and it interoperates with anything neighboring communities, volunteers, or agencies are already running.</li>
+      <li><strong>Encrypted and self-healing.</strong> Every node holds its own private key, and messages hop automatically between nodes, so the network routes around a failed link as it grows.</li>
       <li><strong>Co-located with existing warning infrastructure.</strong> Mounting on a siren pole puts the relay on a tall, well-sited structure the city already owns and services — adding emergency <em>communications</em> to a pole that already carries emergency <em>alerting</em>.</li>
-      <li><strong>Group and private messaging.</strong> A node can broadcast to a shared channel everyone hears — an all-call to the whole response — <em>and</em> send a radio-to-radio direct message privately to a single unit. Both are AES-encrypted.</li>
+      <li><strong>Group and private messaging.</strong> A node can broadcast to a shared channel everyone hears — an all-call to the whole response — <em>and</em> send a radio-to-radio direct message privately to a single unit. Direct messages are encrypted end-to-end between the two radios, so no relay in between can read them.</li>
+      <li><strong>Messages wait for responders who are out of range.</strong> A relay can also be configured to store recent traffic and hand it over when a unit comes back into range — so a crew that was inside a structure or over a hill catches up on what it missed instead of losing it.</li>
       <li><strong>Extensible.</strong> One relay is the seed of a wider low-cost network — additional nodes, remote sensors (water levels, gauges), and neighboring-agency links can be added over time.</li>
     </ul>
-    <p><strong>&ldquo;Why Meshtastic and not one of the alternatives?&rdquo;</strong> There is a newer competing system called MeshCore. Meshtastic is the deliberate choice: it has by far the <strong>largest and most mature community</strong>, the widest selection of supported hardware and apps, and it is the de-facto standard — which means easy support, easy-to-source replacement parts, and interoperability with any neighboring agencies or residents already running it. MeshCore's one edge is more efficient routing on very large, very dense networks — a benefit that only shows up at a scale far beyond this pilot. For a small, long-lived municipal deployment, the mature and widely-supported option is the safer, more sustainable bet.</p>
+    <p><strong>&ldquo;Why MeshCore and not one of the alternatives?&rdquo;</strong> The main alternative is an older, larger project called Meshtastic. MeshCore is the deliberate choice, for one reason above all others: <strong>Nebraska's mesh community has standardized on it.</strong> A relay is worth far more when it is part of a network than when it stands alone, and choosing the platform the rest of the state already runs means Minden's node can talk to neighboring communities from day one, share their coverage, and draw on their operators for support. Picking the other system would buy a slightly larger national community at the cost of being unable to talk to the county next door.</p>
+    <p>The technical fit happens to point the same direction. MeshCore <strong>routes</strong> messages along discovered paths instead of having every node rebroadcast everything, which keeps the airwaves quiet and battery draw low as the network grows — the difference matters most during an incident, when traffic spikes. It also treats a pole-mounted relay as a <strong>distinct role</strong> with its own purpose-built software, rather than a handheld set to a different mode. In fairness to the Council: MeshCore is the newer of the two and its community is smaller nationally. That is a real tradeoff, and it is outweighed here by the fact that the network we would actually be joining is a MeshCore network.</p>
   </section>
 
   <section>
@@ -312,7 +315,7 @@
     </div>
     <p>The only cost to the city is <strong>in-kind labor</strong>: a short bucket-truck visit by a city crew to mount the unit. I've named this openly rather than call the pilot &ldquo;free&rdquo; — it is best scheduled alongside routine siren maintenance so the marginal time is minimal.</p>
 
-    <p><strong>Optional — field units for responders.</strong> The relay is useful on its own, but its value grows when responders carry portable radios that talk through it. These are entirely the city's option and are <em>not</em> part of the donated pilot. The recommended unit is the <strong>Seeed Wio Tracker L1&nbsp;Pro (Meshtastic edition), about $53 each — roughly $57 delivered</strong> — a ready-to-use handheld, no assembly:</p>
+    <p><strong>Optional — field units for responders.</strong> The relay is useful on its own, but its value grows when responders carry portable radios that talk through it. These are entirely the city's option and are <em>not</em> part of the donated pilot. The recommended unit is the <strong>Seeed Wio Tracker L1&nbsp;Pro (MeshCore edition), about $53 each — roughly $57 delivered</strong> — a ready-to-use handheld, no assembly:</p>
     <ul class="clean">
       <li>Screen and joystick — read and send messages on the device itself, no phone required</li>
       <li><strong>Built-in GPS</strong> — each unit can share a responder's live location on the mesh, so incident command can see where crews are during an event</li>
