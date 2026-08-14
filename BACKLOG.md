@@ -5,9 +5,6 @@ Every item here has a matching issue and vice versa.
 
 ## Before the council meeting
 
-- [ ] Confirm the exact radio preset the Nebraska mesh runs — Section 3 now rests on
-      interoperability, so the claim must hold at the setting level, not just the
-      protocol level ([#2](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/2))
 - [ ] Talk to whoever services the sirens; be able to say "maintenance sees no conflict"
       ([#3](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/3))
 - [ ] Determine whether the siren system is city- or county/EMA-controlled — it changes
@@ -29,6 +26,9 @@ Every item here has a matching issue and vice versa.
 - [x] Switch the proposal and all supporting docs from Meshtastic to MeshCore
       ([#1](https://github.com/CryptoJones/Minden-MeshCore-Pilot/pull/1))
 - [x] Rename the repo `Minden-Meshtastic-Pilot` → `Minden-MeshCore-Pilot`
+- [x] Confirm the exact radio settings the Nebraska mesh runs — stock US preset, CR 8,
+      2-byte path hashes (`set path.hash.mode 1`), firmware v1.14.1+
+      ([#2](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/2))
 
 ---
 
