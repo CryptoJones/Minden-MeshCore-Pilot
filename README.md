@@ -16,6 +16,7 @@ is the reason for the platform choice — see Section 3 of the proposal.
 | --- | --- |
 | `HARDWARE.md` | Recommended node hardware (Seeed Wio Tracker L1 Pro, MeshCore edition) + getting-started steps |
 | `REPEATER-BUILD.md` | Build sheet for the pole-mounted solar repeater (parts, assembly, MeshCore config) |
+| `SOLAR-TEST.html` | Bench procedure for measuring a solar panel's real output with a Klein MM325. Open in any browser. |
 | `proposal.html` | The full council proposal — one self-contained HTML page. Open it in any browser to read or print. |
 
 ## Editing the proposal on another machine
