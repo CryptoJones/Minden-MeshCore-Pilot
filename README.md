@@ -24,8 +24,8 @@ The proposal is a single HTML file with **no dependencies** — no build step, n
 nothing to install. To work on it from another computer:
 
 ```bash
-git clone https://github.com/CryptoJones/Minden-Meshtastic-Pilot.git
-cd Minden-Meshtastic-Pilot
+git clone https://github.com/CryptoJones/Minden-MeshCore-Pilot.git
+cd Minden-MeshCore-Pilot
 ```
 
 - **Read / preview / print:** double-click `proposal.html`, or open it in any browser.
