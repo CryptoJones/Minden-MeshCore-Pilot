@@ -14,6 +14,12 @@ Every item here has a matching issue and vice versa.
 
 ## Pilot
 
+- [ ] Run a line-of-sight / propagation site survey **before** requesting a bucket truck —
+      the proposal now commits to this in Section 5
+      ([#10](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/10))
+- [ ] Walk-test both L1 Pro units for real TX performance and compare them — a weak radio
+      is only obvious next to a good one
+      ([#11](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/11))
 - [ ] Order the L1 Pro **MeshCore edition** for the relay
       ([#6](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/6))
 - [ ] Bench-build and commission per `REPEATER-BUILD.md` before any pole work
