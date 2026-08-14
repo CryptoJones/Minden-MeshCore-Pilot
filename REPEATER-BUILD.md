@@ -82,25 +82,70 @@ meshcore-cli -r -s /dev/ttyACM0            # interactive repeater console
 
 Settings that matter:
 
-- **Radio preset:** `set preset us` — the stock US/Canada band plan. A wrong preset is
-  the single most common reason a new node appears dead.
-- **Coding rate 8.** Nebraska runs the stock US preset with CR bumped to 8. Note that CR
-  does **not** have to match between nodes — it travels in each packet's header and the
-  receiver adapts, so a CR 8 node and a CR 5 node hear each other perfectly. CR 8 buys
-  extra reliability on your own marginal links. It is **frequency, bandwidth and
-  spreading factor** that must match the state or the node is deaf.
-- **2-byte path hashes:** `set path.hash.mode 1`. **Watch the off-by-one — mode 1 means
-  2 bytes**, mode 2 means 3 bytes. Requires **firmware v1.14.1 or newer**, on companion
-  nodes as well as repeaters.
+> ### ⚠ Do NOT use the stock `us` preset
+>
+> Nebraska Mesh does **not** run MeshCore's default US region settings. The stock preset
+> uses a far wider bandwidth and a higher spreading factor. A node left on it is
+> **deaf to the entire state network** while looking perfectly healthy on the bench.
+> Set the four values below explicitly.
 
-  Each hop a packet takes is tagged with a hash of the repeater that relayed it. At
-  1 byte there are only 256 possible values, so in a growing region two repeaters
-  eventually collide and the mesh cannot distinguish their paths. 2 bytes gives 65,536.
-  Nebraska has standardized on 2-byte, which is a sign the state network has outgrown
-  the 1-byte space — exactly the network this pilot wants to be part of.
+**Canonical Nebraska Mesh radio settings**, published by the group at
+<https://www.nebraskamesh.net/help.html>. Re-check that page before install — these have
+changed twice in the past year:
 
-  This degrades gracefully rather than failing hard: a 2-byte repeater still relays for
-  1-byte nodes. But the region is meant to be uniform, so match it.
+| Setting | Value | Note |
+| --- | --- | --- |
+| Frequency | **910.525 MHz** | inside the US 915 MHz band |
+| Bandwidth | **62.5 kHz** | the "narrow" setting, adopted Oct 2025 |
+| Spreading factor | **7** | updated 31 May 2026 |
+| Coding rate | **8** | raise for longer or weaker links |
+
+**Frequency, bandwidth and spreading factor must match exactly** or the node cannot hear
+the state. Coding rate is the exception: it rides in each packet's header and the
+receiver adapts, so a CR 8 node and a CR 5 node still hear each other. CR 8 buys margin
+on your own weak links.
+
+Set these over USB with the config tool at <https://config.meshcore.io>, or choose them
+in the web flasher.
+
+- **2-byte path hashes:** `set path.hash.mode 1`. **Mind the off-by-one — mode 1 means
+  2 bytes**, mode 2 means 3 bytes. Needs **firmware v1.14 or newer**; Nebraska Mesh's
+  current firmware is **v1.15.0**. Applies to companion nodes as well as repeaters.
+
+  Each hop is tagged with a hash of the repeater that relayed it. At 1 byte there are
+  only 256 possible values, so in a growing region two repeaters eventually collide and
+  the mesh cannot tell their paths apart. 2 bytes gives 65,536. Nebraska Mesh required
+  2-byte prefixes as part of a June 2026 upgrade, which tells you the state network had
+  outgrown the 1-byte space — exactly the network this pilot wants to join.
+
+  It degrades gracefully rather than failing hard: a 2-byte repeater still relays for
+  1-byte nodes. The region is meant to be uniform, so match it.
+
+- **Check the prefix for collisions** before install, using the prefix tool Nebraska Mesh
+  publishes. The prefix is unique per node, so it is never part of a copy-paste block.
+
+### Repeater tuning recommended by Nebraska Mesh
+
+```
+set agc.reset.interval 120
+set txdelay 0.5
+set loop.detect minimal
+```
+
+**`txdelay` depends on install height**, and ours is a pole:
+
+| Install | txdelay |
+| --- | --- |
+| Tower / high elevation | 0.3 or below |
+| Building top, 50–100 ft | 0.5 |
+| Rooftop / low elevation | 0.5 or above |
+| Mobile repeater | 2.0 |
+
+A siren pole sits in the low-to-middle band, so **start at 0.5** and check their TX-delay
+table once the exact mounting height is known.
+
+They also publish a **voluntary repeater naming scheme** so node owners are identifiable
+on the map. Follow it rather than inventing a name.
 - **Name:** `set name MINDEN-3RD-HUBBARD` — this is what shows up on the statewide map.
 - **Fixed position:** `set lat <lat>` / `set lon <lon>`. The pole never moves, so set it
   once. This is what puts the relay on the map for everyone else; it is not a live GPS
