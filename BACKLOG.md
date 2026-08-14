@@ -5,7 +5,6 @@ Every item here should have a matching issue and vice versa.
 
 ## Before the council meeting
 
-- [ ] Fill the remaining `[Meeting Date]` placeholder in `proposal.html`
 - [ ] Talk to whoever services the sirens; be able to say "maintenance sees no conflict"
 - [ ] Confirm whether the siren system is city-controlled or run through the county /
       regional EMA — that changes who else has to sign off

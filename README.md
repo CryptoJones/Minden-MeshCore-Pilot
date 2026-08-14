@@ -70,15 +70,18 @@ For the pole repeater specifically (parts, assembly, Repeater-firmware config), 
 
 ## Fields still to fill in
 
-The proposal has three placeholders left, each wrapped in a `<mark>…</mark>` tag and
-written in `[square brackets]` so they're easy to find (they render highlighted):
+**None — the proposal is fully filled in.** Name (Aaron K. Clark), city, department,
+title, siren location (3rd & Hubbard), contact email, and the cost table are all set.
+The date fills itself in with today's date whenever the file is opened or printed, so a
+printed copy always carries the date it was actually run.
 
-- `[Meeting Date]`
-- `[phone]`
-- `[email]`
+Worth checking before you present, even though nothing is blank:
 
-Search the file for `[` to jump to them. Everything else — name (Aaron K. Clark),
-city, department, title, siren location (3rd & Hubbard), cost table — is already filled.
+- The cost table still reads $53 / ~$186 total. Both the MeshCore and Meshtastic
+  editions of the L1 Pro list at the same price, so the switch didn't change it — but
+  re-check current pricing before quoting figures to the Council.
+- Confirm the radio preset the Nebraska mesh actually runs, since Section 3 now rests
+  on interoperability with it.
 
 ## Notes for the pilot itself
 
