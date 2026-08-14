@@ -14,7 +14,7 @@ bundles the radio, battery, and solar input — so the whole node is one ~$47 de
 | Part | Est. | Notes |
 | --- | --- | --- |
 | Seeed Wio Tracker L1 Pro (MeshCore edition, US 915 MHz) | $48 | radio + 2000 mAh battery + solar input in one unit |
-| Solar panel ~10 W, weatherproof, with charge management | $40 | sized for 24/7 unattended through cloudy stretches — bigger than the unit's built-in trickle input |
+| Solar panel, **5–6 V** nominal, ~5–10 W, rigid & weatherproof | $40 | sized for 24/7 unattended through cloudy stretches. **Must be a 5 V panel, not the usual 12/18 V** — see the voltage warning under Assembly |
 | External gain antenna (915 MHz fiberglass, ~5–6 dBi) + low-loss coax + pole mount | $55 | **this is what gives the pole its range** — the unit's stock whip is for handheld use |
 | Weatherproof enclosure + cable glands | $23 | for permanent outdoor mounting + sealed cable entries |
 | Contingency | $15 | |
@@ -40,7 +40,27 @@ loss at 915 MHz adds up fast), and keep the electronics in a shaded box lower do
    solar lead in through sealed cable glands. The unit's own case is rugged but is not a
    permanent all-weather mount on its own.
 4. **Solar:** mount the panel facing due south, tilted roughly to your latitude, with a
-   clear sky view. Wire it to the unit's solar/charge input.
+   clear sky view. Wire it to the unit's solar/charge input — **but read the voltage
+   warning below first.**
+
+> ### ⚠ The L1 Pro's solar input is 5 V. Do not exceed it.
+>
+> Seeed's spec is **5 V / 1 A max, "do not exceed 5V"**, on a 2-pin 2.0 mm JST
+> connector. Almost every solar panel sold for outdoor use is **12 V or 18 V nominal**
+> and will read ~22 V open-circuit in cold sun. Connecting one directly to this input
+> destroys the node instantly.
+>
+> Two safe options:
+>
+> - **Buy a 5–6 V panel** sized around 5–10 W and feed the solar input directly. Simplest,
+>   fewest parts, nothing extra to fail inside a sealed box. This is what the $40 budget
+>   line assumes.
+> - **Use a higher-voltage panel with a buck converter** rated for 24 V+ input, stepping
+>   down to 5 V, then into the **USB-C port** rather than the JST solar input. Fine on the
+>   bench; adds a permanent failure point on a pole.
+>
+> The node cannot accept more than **5 W** (5 V × 1 A) no matter what you connect, so a
+> large panel buys nothing. Oversize for cloudy weeks, not for watts the node can't take.
 5. **Mount:** fix the enclosure to the pole **below and clear of the siren**, antenna run
    up the mast to the highest clear point, well away from the siren head and its conduit.
 
@@ -85,6 +105,7 @@ and the same commands, authenticated with the admin password.
 
 - [ ] Joins the mesh from a handheld on the bench before install.
 - [ ] Antenna attached before every power-on.
+- [ ] Solar input measured at **under 5 V** before it is ever connected to the node.
 - [ ] After install, a handheld at a distant point in town can reach the mesh **through**
       the repeater (check hop count / that the repeater relayed).
 - [ ] Battery holds voltage overnight and recovers through a cloudy day — watch it for a
