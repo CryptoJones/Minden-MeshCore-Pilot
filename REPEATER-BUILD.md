@@ -32,7 +32,8 @@ loss at 915 MHz adds up fast), and keep the electronics in a shaded box lower do
 ## Assembly
 
 1. **Flash + configure first, on the bench** (see Config below) before it ever goes up
-   the pole. Verify it joins the mesh from a second node indoors.
+   the pole. Verify it joins the mesh from a second node indoors. Use **firmware v1.14.1
+   or newer** — older builds cannot do the 2-byte path hashes the state runs.
 2. **Antenna:** disconnect the stock whip; connect the external gain antenna via coax to
    the unit's antenna connector. **Never power the radio with no antenna attached** — it
    can damage the transmitter.
@@ -81,10 +82,25 @@ meshcore-cli -r -s /dev/ttyACM0            # interactive repeater console
 
 Settings that matter:
 
-- **Radio preset:** `set preset us` — the US 915 MHz band plan. Must match every other
-  node in the state or it hears nothing. Confirm against what the Nebraska mesh is
-  actually running before install; a wrong preset is the single most common reason a
-  new node appears dead.
+- **Radio preset:** `set preset us` — the stock US/Canada band plan. A wrong preset is
+  the single most common reason a new node appears dead.
+- **Coding rate 8.** Nebraska runs the stock US preset with CR bumped to 8. Note that CR
+  does **not** have to match between nodes — it travels in each packet's header and the
+  receiver adapts, so a CR 8 node and a CR 5 node hear each other perfectly. CR 8 buys
+  extra reliability on your own marginal links. It is **frequency, bandwidth and
+  spreading factor** that must match the state or the node is deaf.
+- **2-byte path hashes:** `set path.hash.mode 1`. **Watch the off-by-one — mode 1 means
+  2 bytes**, mode 2 means 3 bytes. Requires **firmware v1.14.1 or newer**, on companion
+  nodes as well as repeaters.
+
+  Each hop a packet takes is tagged with a hash of the repeater that relayed it. At
+  1 byte there are only 256 possible values, so in a growing region two repeaters
+  eventually collide and the mesh cannot distinguish their paths. 2 bytes gives 65,536.
+  Nebraska has standardized on 2-byte, which is a sign the state network has outgrown
+  the 1-byte space — exactly the network this pilot wants to be part of.
+
+  This degrades gracefully rather than failing hard: a 2-byte repeater still relays for
+  1-byte nodes. But the region is meant to be uniform, so match it.
 - **Name:** `set name MINDEN-3RD-HUBBARD` — this is what shows up on the statewide map.
 - **Fixed position:** `set lat <lat>` / `set lon <lon>`. The pole never moves, so set it
   once. This is what puts the relay on the map for everyone else; it is not a live GPS

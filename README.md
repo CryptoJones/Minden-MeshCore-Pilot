@@ -87,9 +87,10 @@ Worth checking before you present, even though nothing is blank:
 
 - **Region:** US hardware must be the **915 MHz** variant. An 868 MHz (EU) board won't
   talk to a US network and isn't legal to transmit on here.
-- **Interoperability is the point.** Match whatever radio preset the Nebraska mesh is
-  actually running, not just "US" in the abstract. A node on the wrong preset is
-  invisible to the state network and looks simply broken.
+- **Interoperability is the point.** The Nebraska mesh runs the **stock US preset with
+  coding rate 8 and 2-byte path hashes** (`set path.hash.mode 1`, firmware v1.14.1+).
+  Match it — a node on the wrong radio settings is invisible to the state network and
+  looks simply broken. Full detail in `REPEATER-BUILD.md`.
 - **The siren comes first.** Any install must keep the relay physically and
   electrically clear of the siren and its control wiring — see Section 5 of the proposal.
 - **Talk to whoever services the sirens before the council meeting.** Being able to
