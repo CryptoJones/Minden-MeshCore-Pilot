@@ -117,8 +117,26 @@ Once it's on the pole you can administer it **over the air** from a companion no
 rather than climbing back up: `meshcore-cli` in client mode, then `to <repeater-name>`
 and the same commands, authenticated with the admin password.
 
+## Site survey — do this BEFORE anything goes up a pole
+
+Free, done from a desk, and it is the step that prevents wasting a city crew's morning.
+
+- [ ] Run the pole location through the MeshCore map's **line-of-sight and propagation
+      tools**. Confirm usable sightlines before requesting a bucket truck.
+- [ ] If the modeling looks poor, propose a different site rather than installing and hoping.
+
+Field reports from operators in hilly terrain show these tools correctly predicting a
+blocked path before it was confirmed on the ground. Minden's flat ground is the favorable
+case — but flat also means no natural high points, which is exactly why the pole matters.
+
 ## Commissioning checklist
 
+- [ ] **Verify the radio actually transmits at full power — not just that it boots.**
+      A node can power up, join a mesh, and receive perfectly while transmitting badly.
+      One documented field case had a defective unit that worked only within ~500 ft and
+      passed every "does it turn on" check. **Walk-test the range before install**, and
+      if you have two units, compare them against each other — a weak radio is only
+      obvious next to a good one.
 - [ ] Joins the mesh from a handheld on the bench before install.
 - [ ] Antenna attached before every power-on.
 - [ ] Solar input measured at **under 5 V** before it is ever connected to the node.
@@ -136,6 +154,16 @@ and the same commands, authenticated with the admin password.
 One elevated repeater plus handhelds is hub-and-spoke — a mesh, but a shallow one. Adding
 a second elevated node (another siren pole, a water tower, a hilltop) is what gives real
 path redundancy and self-healing. That's the grant-funded Phase 2 in the proposal.
+
+Two lessons worth carrying in from operators who have already done this:
+
+- **Siting beats spending.** One operator moved a repeater ~1,200 ft to a spot only
+  **30 ft higher** with better sightlines and went from roughly −8 dB to about 0 dB. That
+  same person saw no improvement at all from a better antenna and no improvement from a
+  purpose-built repeater over a bare node sitting in the yard. Height and geometry are the
+  levers; hardware spend is not.
+- **Solar is the easy part.** An 8 W panel held a 2× 18650 bank at 94–95% through a full
+  week of rain — lying unmounted on the ground. Our budget is generous by comparison.
 
 Worth doing early and for free: get the relay onto the **Nebraska mesh community's** map
 and tell them it's coming up. Because the state has standardized on MeshCore, a correctly
