@@ -1,0 +1,333 @@
+<title>Solar Panel Bench Test — MM325</title>
+<style>
+/* CYBERDECK — CryptoJones's approved dark neon terminal theme
+   Tokens lifted verbatim from github.com/CryptoJones/cyberdeck-theme (cyberdeck.css). */
+:root {
+  --bg:        #07090f;   /* page background — near-black, blue cast        */
+  --panel:     #0c1018f2; /* sticky header / cards (slightly translucent)   */
+  --fg:        #cfd8e3;   /* body text — soft blue-white                    */
+  --accent:    #27d4ff;   /* THE cyan — headings, borders, glow             */
+  --stamp:     #55ff99;   /* timestamps / line numbers — terminal green     */
+  --dim:       #5a6678;   /* de-emphasized rows                             */
+  --dim2:      #3a4456;   /* even dimmer labels                             */
+  --muted:     #88aaaa;   /* legends, captions                              */
+  --alert:     #ff4f4f;   /* corrections / errors — red edge + label        */
+  --hover:     #101826;
+  --active:    #13233a;
+  --hairline:  #141a26;
+  --cat-orange: #ff9b3d;  --cat-yellow: #ffe14f;  --cat-green: #7dff6e;
+}
+
+* { box-sizing: border-box; }
+
+body { background: var(--bg); color: var(--fg);
+  font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  margin: 0; font-size: 20px; }                      /* BIG FONTS — non-negotiable */
+
+.deck { max-width: 58rem; margin: 0 auto; padding: 22px 18px 90px; }
+
+header { background: var(--panel); border-bottom: 2px solid var(--accent);
+  padding: 14px 18px; margin-bottom: 30px; }
+h1 { font-size: 26px; margin: 0 0 10px; color: var(--accent);
+  text-shadow: 0 0 12px #27d4ff66; }                 /* the neon glow */
+h1 small { color: #888; font-size: 16px; display: block; margin-top: 6px; }
+.legend { font-size: 15px; color: var(--muted); margin-top: 8px; }
+
+h2 { font-size: 21px; color: var(--accent); text-shadow: 0 0 10px #27d4ff44;
+  margin: 44px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--hairline); }
+h2 .idx { color: var(--stamp); margin-right: 10px; }
+h3 { font-size: 17px; color: var(--stamp); margin: 26px 0 8px; }
+
+p { margin: 0 0 14px; line-height: 1.55; }
+strong { color: #fff; }
+em { color: var(--muted); font-style: normal; }
+code { background: #0c1018; color: var(--stamp); padding: 1px 6px;
+  border: 1px solid var(--hairline); border-radius: 3px; font-size: .9em; }
+a { color: var(--accent); }
+
+ul, ol { margin: 0 0 14px; padding-left: 24px; line-height: 1.55; }
+li { margin-bottom: 7px; }
+li::marker { color: var(--stamp); }
+
+/* ---- callout cards ---- */
+.box { background: #0c1018; border-left: 5px solid var(--accent);
+  padding: 14px 18px; margin: 18px 0; }
+.box.danger { border-left-color: var(--alert);      background: #1a0f14; }
+.box.warn   { border-left-color: var(--cat-orange); background: #17110a; }
+.box.ok     { border-left-color: var(--stamp);      background: #0b1611; }
+.box .tag { display: inline-block; font-size: 13px; letter-spacing: .14em;
+  text-transform: uppercase; font-weight: bold; color: var(--bg);
+  background: var(--accent); padding: 2px 9px; border-radius: 3px; margin-bottom: 10px; }
+.box.danger .tag { background: var(--alert);      color: #fff; }
+.box.warn   .tag { background: var(--cat-orange); color: #1a1200; }
+.box.ok     .tag { background: var(--stamp);      color: #04180d; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+
+/* ---- tables ---- */
+.tw { overflow-x: auto; margin: 16px 0; border: 1px solid var(--hairline); }
+table { width: 100%; border-collapse: collapse; font-size: 16px; min-width: 30rem; }
+th, td { text-align: left; padding: 9px 13px;
+  border-bottom: 1px solid var(--hairline); vertical-align: top; }
+thead th { background: #0c1018; color: var(--stamp); font-size: 13px;
+  letter-spacing: .12em; text-transform: uppercase; }
+tbody tr:hover { background: var(--hover); }
+tbody tr:last-child td { border-bottom: 0; }
+td.n { color: var(--cat-yellow); white-space: nowrap; }
+
+/* ---- numbered steps ---- */
+.step { background: #0c1018; border: 1px solid var(--hairline);
+  padding: 14px 18px; margin: 14px 0; }
+.step p { margin-bottom: 10px; }
+.step p:last-child { margin-bottom: 0; }
+.no { display: inline-block; background: var(--accent); color: var(--bg);
+  font-weight: bold; padding: 1px 9px; margin-right: 9px; font-size: 15px; }
+
+/* ---- record sheet ---- */
+.rec { border: 1px dashed var(--stamp); background: #0c1018; padding: 16px 18px; }
+.rec .line { display: flex; gap: 14px; align-items: baseline;
+  margin-bottom: 14px; flex-wrap: wrap; }
+.rec .line:last-child { margin-bottom: 0; }
+.rec .lbl { color: var(--dim); min-width: 17rem; font-size: 16px; }
+.rec .blank { flex: 1; border-bottom: 1px solid var(--dim2); min-width: 7rem; height: 1.5em; }
+
+footer { margin-top: 50px; padding-top: 16px; border-top: 1px solid var(--hairline);
+  color: var(--dim); font-size: 15px; }
+footer .gbr { color: var(--stamp); }
+</style>
+
+<div class="deck">
+
+  <header>
+    <h1>SOLAR PANEL BENCH TEST — KLEIN MM325
+      <small>Minden MeshCore Pilot // measuring an MC4 panel's real output</small></h1>
+    <div class="legend">Establish what the panel actually delivers, so the node's charge
+      electronics get designed against measured reality instead of a marketplace listing.</div>
+  </header>
+
+  <div class="box warn">
+    <span class="tag">Panel under test</span>
+    <p>Sold as <strong>200 W</strong>. An identical-looking unit is listed elsewhere as
+      <strong>50 W</strong>, and buyer reports put it well under its rating. The seller has since
+      shut down.</p>
+    <p>If it is truly a 50 W panel, expect <strong>Voc 21–22 V</strong> and
+      <strong>Isc 2.5–3.0 A</strong>.</p>
+  </div>
+
+  <h2><span class="idx">01</span>Gear</h2>
+
+  <p>The meter is the easy part. <strong>Getting electrical contact with MC4 connectors is the real
+    obstacle</strong> — MC4 is deliberately touch-proof. The male pin is shrouded and the female
+    socket recessed, specifically so you cannot get a probe tip onto them.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Item</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Klein MM325</td><td>Manual-ranging. 600 V / 10 A / 2 MΩ, CAT III 600 V.</td></tr>
+        <tr><td><strong>MC4 test leads</strong></td>
+            <td><strong>The piece you probably don't have.</strong> A male + female MC4 pigtail pair
+                with bare-wire or banana ends, about $10. Alternative: a spare pair of MC4 connectors
+                crimped onto short wire tails.</td></tr>
+        <tr><td>Tape measure</td><td>For the area check. Works indoors, in any weather.</td></tr>
+        <tr><td>Full sun</td><td>Clear sky, midday, panel square to the sun. Overcast invalidates the
+                current reading but <em>not</em> the voltage reading.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box danger">
+    <span class="tag">Meter is indoor-rated</span>
+    <p>Klein specifies the MM325 for <strong>indoor use — no moisture, rain, or snow</strong>,
+      operating range <strong>32–104 °F</strong>. Carry it out, take the readings, bring it back.
+      Don't set it in wet grass and don't leave it baking on the panel face.</p>
+  </div>
+
+  <h2><span class="idx">02</span>Know the meter</h2>
+
+  <p>Three jacks, and it is <strong>manual-ranging</strong> — you pick the range, it will not pick
+    for you, and picking wrong shows <code>OL</code> rather than a number.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Jack</th><th>Used for</th><th>Fuse</th></tr></thead>
+      <tbody>
+        <tr><td><code>10A</code></td><td>RED lead — current from 200 mA to 10 A</td>
+            <td class="n">10 A / 600 V fast-blow (Klein 69032)</td></tr>
+        <tr><td><code>COM</code></td><td>BLACK lead — always</td><td class="n">—</td></tr>
+        <tr><td><code>VΩ</code></td><td>RED lead — voltage, resistance, mA</td>
+            <td class="n">200 mA / 600 V fast-blow (Klein 69031)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box ok">
+    <span class="tag">Two features to use</span>
+    <p><strong>Lead Alert LEDs</strong> glow <strong>green</strong> when your leads sit in the jacks
+      matching the dial position. Glancing at them before every measurement is the single habit that
+      prevents the mistake that kills meters.</p>
+    <p><strong>HOLD</strong> freezes the display. Outdoors in bright sun with both hands on a panel,
+      press HOLD and walk into the shade to read it.</p>
+  </div>
+
+  <h2><span class="idx">03</span>Test A — Cell area <em>(indoors, any weather, no meter)</em></h2>
+
+  <p>Silicon PV is roughly 20% efficient and peak sunlight is about 1000 W/m². A panel therefore
+    cannot exceed about <strong>200 W per square meter</strong> of cell area, whatever the listing
+    claimed. This bound cannot be argued with by a support rep and does not vary with test conditions.</p>
+
+  <div class="step">
+    <p><span class="no">A1</span>Measure the <strong>cell area</strong> — the dark rectangle of actual
+      cells, <em>not</em> the whole laminate including its border.</p>
+    <p><span class="no">A2</span>Length × width, in meters, gives m².</p>
+    <p><span class="no">A3</span>Ceiling wattage ≈ <code>area_m2 × 200</code>.</p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Cell area</th><th>Physical ceiling</th><th>Reading</th></tr></thead>
+      <tbody>
+        <tr><td class="n">~0.25 m² (2.7 ft²)</td><td class="n">~50 W</td>
+            <td>Matches the 50 W listing. The panel is what it is; the label was the lie.</td></tr>
+        <tr><td class="n">~0.5 m²</td><td class="n">~100 W</td><td>Still nowhere near 200 W.</td></tr>
+        <tr><td class="n">~1.0 m² or more</td><td class="n">~200 W</td>
+            <td>Could genuinely be 200 W. <strong>Read the stop-condition in section 05 before
+                measuring current.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><span class="idx">04</span>Test B — Open-circuit voltage (Voc)</h2>
+
+  <p>Voc barely depends on light level — even under overcast you read within about 5–10% of true.
+    <strong>This is the number that selects the charge controller, the regulator, and which boards are
+    candidates at all</strong>, so it is the one worth having first.</p>
+
+  <div class="step">
+    <p><span class="no">B1</span><strong>RED</strong> → <code>VΩ</code> jack.
+       <strong>BLACK</strong> → <code>COM</code> jack.</p>
+    <p><span class="no">B2</span>Dial to <strong>DC volts, 200 V range</strong>. Klein's manual says
+       start high and step down for resolution — but note that <strong>the 20 V range shows
+       <code>OL</code></strong> on a ~21 V panel. Settle on 200 V; drop to 20 V only if the reading is
+       comfortably below 20.</p>
+    <p><span class="no">B3</span>Connect across the two MC4 leads, nothing else attached.</p>
+    <p><span class="no">B4</span>Aim the panel square at the sun. Record the highest stable reading.</p>
+  </div>
+
+  <div class="box">
+    <span class="tag">Expected</span>
+    <p>An "18 V nominal" panel reads <strong>21–22 V</strong> open-circuit. The hazardous-voltage
+      indicator appears above 30 V — if it lights, this is a higher-voltage panel than assumed and
+      every downstream component needs reconsidering.</p>
+  </div>
+
+  <div class="box warn">
+    <span class="tag">Design for January, not for today</span>
+    <p>Panel voltage <strong>rises as temperature falls</strong>, roughly <strong>0.3% per °C below
+      25 °C</strong>. A Nebraska morning at −20 °C puts Voc about <strong>13–15% higher</strong> than
+      whatever you measure in August. Every regulator downstream must be rated for that winter peak.
+      This is the classic way a system that ran fine all summer destroys its controller in January.</p>
+  </div>
+
+  <h2><span class="idx">05</span>Test C — Short-circuit current (Isc)</h2>
+
+  <p>Here the meter <em>becomes</em> the short across the panel. That is safe and normal for solar,
+    which is current-limited by physics and cannot deliver more than Isc no matter what you do to it.
+    It is emphatically <strong>not</strong> safe on a battery or any other source.</p>
+
+  <div class="box danger">
+    <span class="tag">Stop condition</span>
+    <p>If Test A put the ceiling near <strong>200 W</strong> and Voc is 18–22 V, Isc could approach
+      <strong>11 A</strong> — past the MM325's 10 A limit, which blows the 69032 fuse. In that case
+      skip this test or borrow a clamp meter.</p>
+    <p>At a real ~50 W you will see <strong>2.5–3.0 A</strong> and there is no issue.</p>
+  </div>
+
+  <div class="step">
+    <p><span class="no">C1</span>Move <strong>RED</strong> to the <code>10A</code> jack.
+       <strong>BLACK</strong> stays in <code>COM</code>.</p>
+    <p><span class="no">C2</span>Dial to <strong>10 A DC</strong>. Confirm Lead Alert is green.</p>
+    <p><span class="no">C3</span>Touch the probes across the panel's two MC4 leads. Read it, press
+       <strong>HOLD</strong>, disconnect.</p>
+    <p><span class="no">C4</span><strong>Immediately return the RED lead to the <code>VΩ</code>
+       jack.</strong></p>
+  </div>
+
+  <div class="box danger">
+    <span class="tag">The mistake that kills meters</span>
+    <p>Probing a <em>voltage</em> source while the red lead is still in the <code>10A</code> jack is a
+      <strong>dead short through the meter</strong>. It is the most common way a multimeter dies.
+      Make "red lead goes home to VΩ" a reflex the moment a current reading ends.</p>
+  </div>
+
+  <div class="box warn">
+    <span class="tag">Duration limit</span>
+    <p>Klein specifies that above <strong>6 A</strong>, measurement is limited to <strong>30 seconds,
+      followed by 10 minutes of recovery</strong>. This panel should sit well under that — but take
+      the reading briskly anyway. Don't leave it shorted while you go find a pen.</p>
+  </div>
+
+  <h2><span class="idx">06</span>The math</h2>
+
+  <p>Peak power is <strong>not</strong> Voc × Isc. A real panel delivers a fraction of that product,
+    the <em>fill factor</em> — typically 0.75–0.80 for decent monocrystalline, lower for cheap cells.</p>
+
+  <div class="box ok">
+    <span class="tag">Formula</span>
+    <p><code>P_max ≈ Voc × Isc × 0.78</code></p>
+    <p>Worked: <code>21.4 V × 2.8 A × 0.78 ≈ 46.7 W</code></p>
+  </div>
+
+  <p>Cross-check against the Test A ceiling. If the electrical figure exceeds the area ceiling,
+    <strong>trust the tape measure</strong> — physics does not vary with test conditions, and a
+    marketplace listing does.</p>
+
+  <h2><span class="idx">07</span>What each number actually decides</h2>
+
+  <p>Peak watts is the headline, but it is <strong>not</strong> what sizes an off-grid repeater.
+    A LoRa node draws on the order of <strong>0.2–0.5 W average</strong> — 5 to 12 Wh/day. Nebraska
+    yields roughly 2–3 peak-sun-hours in December, and near zero under snow cover.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Measurement</th><th>What it decides</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Voc</strong></td>
+            <td>Charge controller and regulator selection; which boards are viable.
+                <strong>The most important number here.</strong></td></tr>
+        <tr><td><strong>Isc</strong></td>
+            <td>Controller current rating and wire gauge. Generously oversized for this load
+                either way.</td></tr>
+        <tr><td><strong>P_max</strong></td>
+            <td>Mostly satisfies curiosity. Even a badly underperforming panel is many times what
+                the node can consume.</td></tr>
+        <tr><td><strong>Cell area</strong></td>
+            <td>The honest bound, and the only figure nobody can dispute.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The binding constraint on a pole node is <strong>battery capacity across multi-day
+    overcast</strong>, not panel wattage. Sizing follows once Voc is known.</p>
+
+  <h2><span class="idx">08</span>Record sheet</h2>
+
+  <div class="rec">
+    <div class="line"><span class="lbl">Date / time</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Sky — clear / hazy / overcast</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Ambient temperature</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Cell area — L × W</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Area ceiling — m² × 200</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Voc — 200 V range</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Isc — 10 A range</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">P_max = Voc × Isc × 0.78</span><span class="blank"></span></div>
+    <div class="line"><span class="lbl">Voc × 1.15 — winter design figure</span><span class="blank"></span></div>
+  </div>
+
+  <footer>
+    <p>Meter figures taken from the Klein Tools MM325 instruction manual — 600 V / 10 A / 2 MΩ,
+      CAT III 600 V, manual-ranging, DC current ranges 200 µA / 20 mA / 200 mA / 10 A.</p>
+    <p>Styled with <a href="https://github.com/CryptoJones/cyberdeck-theme">cyberdeck-theme</a>.</p>
+    <p class="gbr">Proudly Made in Nebraska. Go Big Red! 🌽 https://xkcd.com/2347/</p>
+  </footer>
+
+</div>
