@@ -16,6 +16,7 @@ is the reason for the platform choice — see Section 3 of the proposal.
 | --- | --- |
 | `HARDWARE.md` | Recommended node hardware (Seeed Wio Tracker L1 Pro, MeshCore edition) + getting-started steps |
 | `REPEATER-BUILD.md` | Build sheet for the pole-mounted solar repeater (parts, assembly, MeshCore config) |
+| `NEBRASKA-MESH.md` | The statewide network this pilot joins — their canonical radio settings, siting guidance, and the property-owner FAQ |
 | `SOLAR-TEST.html` | Bench procedure for measuring a solar panel's real output with a Klein MM325. Open in any browser. |
 | `proposal.html` | The full council proposal — one self-contained HTML page. Open it in any browser to read or print. |
 
@@ -88,10 +89,12 @@ Worth checking before you present, even though nothing is blank:
 
 - **Region:** US hardware must be the **915 MHz** variant. An 868 MHz (EU) board won't
   talk to a US network and isn't legal to transmit on here.
-- **Interoperability is the point.** The Nebraska mesh runs the **stock US preset with
-  coding rate 8 and 2-byte path hashes** (`set path.hash.mode 1`, firmware v1.14.1+).
-  Match it — a node on the wrong radio settings is invisible to the state network and
-  looks simply broken. Full detail in `REPEATER-BUILD.md`.
+- **Interoperability is the point — and the stock preset will NOT get you there.**
+  Nebraska Mesh runs **910.525 MHz / 62.5 kHz / SF 7 / CR 8**, with 2-byte path hashes
+  (`set path.hash.mode 1`) on firmware v1.14+ (current: v1.15.0). MeshCore's default US
+  region preset uses a much wider bandwidth and a higher spreading factor, so a node left
+  on it is **deaf to the whole state** while looking fine on the bench. Canonical source:
+  <https://www.nebraskamesh.net/help.html>. Full detail in `REPEATER-BUILD.md`.
 - **The siren comes first.** Any install must keep the relay physically and
   electrically clear of the siren and its control wiring — see Section 5 of the proposal.
 - **Talk to whoever services the sirens before the council meeting.** Being able to

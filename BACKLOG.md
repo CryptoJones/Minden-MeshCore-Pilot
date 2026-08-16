@@ -5,6 +5,12 @@ Every item here has a matching issue and vice versa.
 
 ## Before the council meeting
 
+- [ ] **Re-verify the Nebraska Mesh radio settings before install** — they changed twice
+      in the past year, and a wrong bandwidth or spreading factor makes the node deaf to
+      the state while looking healthy on the bench
+      ([#2](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/2))
+- [ ] Read Nebraska Mesh's [Host a Node FAQ](https://www.nebraskamesh.net/property-owner-faq.html) —
+      it is the same conversation we are having with the city, from the host's side
 - [ ] Talk to whoever services the sirens; be able to say "maintenance sees no conflict"
       ([#3](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/3))
 - [ ] Determine whether the siren system is city- or county/EMA-controlled — it changes
@@ -32,9 +38,8 @@ Every item here has a matching issue and vice versa.
 - [x] Switch the proposal and all supporting docs from Meshtastic to MeshCore
       ([#1](https://github.com/CryptoJones/Minden-MeshCore-Pilot/pull/1))
 - [x] Rename the repo `Minden-Meshtastic-Pilot` → `Minden-MeshCore-Pilot`
-- [x] Confirm the exact radio settings the Nebraska mesh runs — stock US preset, CR 8,
-      2-byte path hashes (`set path.hash.mode 1`), firmware v1.14.1+
-      ([#2](https://github.com/CryptoJones/Minden-MeshCore-Pilot/issues/2))
+- [x] Pull Nebraska Mesh's published resources into the repo as `NEBRASKA-MESH.md`
+      (linked, not re-hosted)
 
 ---
 
