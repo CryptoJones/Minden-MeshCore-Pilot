@@ -149,6 +149,30 @@ case — but flat also means no natural high points, which is exactly why the po
 - [ ] The relay's advert is visible to the wider Nebraska mesh, not just to local nodes —
       this is the whole point of choosing MeshCore, so confirm it rather than assume it.
 
+## Lightning & grounding — a permanence upgrade, not a pilot part
+
+**The pilot node is intentionally not lightning-grounded, and that is a deliberate,
+bounded choice — not an oversight.** The whole node is a ~$47 disposable proof: it is
+mounted low on the pole, below and clear of the siren head, and it is temporary. An
+antenna on a mast is a raised conductor, so it does build static charge in wind and can
+pick up a surge from a nearby strike — but for a low-value node on a short pilot, the
+honest cost/benefit is to accept that risk rather than spend more on grounding hardware
+than the node itself is worth. If the pilot node is ever lost to weather, it is replaced
+for the price of the unit.
+
+**What does *not* change for the pilot:** the relay stays electrically separate from the
+siren — its own antenna, its own power, nothing tapped from or bonded to the siren's
+wiring or its ground. The siren's protection is never touched.
+
+**If the pilot succeeds and the node becomes a permanent fixture, proper lightning and
+surge protection gets added then — by the city, as part of making it permanent, not
+donated as part of this pilot.** That means an inline coax surge arrestor and the mast
+bonded to a dedicated ground rod, installed to NEC by the city's electrician or crew and
+kept separate from the siren's own grounding system. This is a modest, standard hardening
+step for any permanent pole-mounted antenna, and it belongs with the permanence decision
+(and its funding) — not with a disposable proof-of-concept. The proposal states this
+plainly in its Risks & limitations section and commits to it as Phase 2 hardening.
+
 ## Where this goes next
 
 One elevated repeater plus handhelds is hub-and-spoke — a mesh, but a shallow one. Adding
