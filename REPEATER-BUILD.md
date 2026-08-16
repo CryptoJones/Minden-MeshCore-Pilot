@@ -173,6 +173,67 @@ step for any permanent pole-mounted antenna, and it belongs with the permanence 
 (and its funding) — not with a disposable proof-of-concept. The proposal states this
 plainly in its Risks & limitations section and commits to it as Phase 2 hardening.
 
+## Automated data collection (for the pilot report)
+
+The evaluation the proposal promises — uptime, battery through the season,
+packet counts, and above all *was the relay reachable* — does not need anyone to
+climb the pole or babysit a laptop. A repeater is administrable **over the air**:
+any MeshCore companion node in radio range can log in with the admin password and
+ask it for status. So the hands-off way to gather the pilot data is a small
+always-on collector at home:
+
+1. **A home base node.** A spare MeshCore **companion** node (any supported board,
+   e.g. a Seeed XIAO nRF52840 + Wio-SX1262, or a second L1) plugged by USB into an
+   always-on computer — a Raspberry Pi is ideal. It only has to be within radio
+   range of the rooftop repeater, which a rooftop relay covering the town almost
+   certainly reaches. This node lives indoors on a desk; it is **not** a second
+   roof install.
+2. **The polling script.** `tools/poll-repeater.py` in this repo connects to that
+   local node, logs in to the repeater over the mesh, requests its status on a
+   fixed interval, and appends one row per reading to a CSV:
+
+   ```bash
+   pipx install meshcore-cli        # provides the meshcore library
+   python3 tools/poll-repeater.py \
+       --port /dev/ttyACM0 \
+       --repeater MINDEN-3RD-HUBBARD \
+       --password "$REPEATER_ADMIN_PW" \
+       --csv ~/minden-pilot/status.csv \
+       --interval 900               # every 15 minutes
+   ```
+
+   Every row carries `reachable` (1/0), uptime, battery millivolts, RX/TX and
+   flood/direct packet counts, RSSI/SNR, noise floor, airtime, and error counts.
+   A `reachable=0` row is not a crash — it is a recorded outage, which is exactly
+   the availability data the report needs.
+3. **Keep it running** under a service manager so it survives reboots. A minimal
+   systemd unit (`/etc/systemd/system/minden-pilot-logger.service`):
+
+   ```ini
+   [Unit]
+   Description=MeshCore pilot repeater logger
+   After=network.target
+
+   [Service]
+   Environment=REPEATER_ADMIN_PW=change-me
+   ExecStart=/usr/bin/python3 /home/pi/Minden-MeshCore-Pilot/tools/poll-repeater.py \
+       --port /dev/ttyACM0 --repeater MINDEN-3RD-HUBBARD \
+       --csv /home/pi/minden-pilot/status.csv --interval 900
+   Restart=always
+   User=pi
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+   Enable it with `systemctl enable --now minden-pilot-logger` (as root). The CSV
+   then charts straight into the interim (~3 month) and final (6 month) reports —
+   uptime %, battery vs. time across the season, and traffic — with no ongoing
+   effort.
+
+Coverage is the one metric this cannot capture: where the relay reaches is
+measured by walking/driving town with a handheld, not polled from a desk.
+
 ## Where this goes next
 
 One elevated repeater plus handhelds is hub-and-spoke — a mesh, but a shallow one. Adding
