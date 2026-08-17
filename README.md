@@ -15,7 +15,8 @@ is the reason for the platform choice — see Section 3 of the proposal.
 | File | What it is |
 | --- | --- |
 | `HARDWARE.md` | Recommended node hardware (Seeed Wio Tracker L1 Pro, MeshCore edition) + getting-started steps |
-| `REPEATER-BUILD.md` | Build sheet for the pole-mounted solar repeater (parts, assembly, MeshCore config) |
+| `REPEATER-BUILD.md` | Build sheet for the pole node — the sealed **SenseCAP Solar Node P1-Pro** (parts, assembly, MeshCore config, commissioning) |
+| `COVERAGE-NODE.md` | Build sheet for the cheap, many **coverage** nodes — the $35 "People's Repeater" solar build (BOM, fit checks, flashing) |
 | `SOLAR-TEST.html` | Bench procedure for measuring a solar panel's real output with a Klein MM325. Open in any browser. |
 | `proposal.html` | The full council proposal — one self-contained HTML page. Open it in any browser to read or print. |
 | `ARCHITECTURE.html` | Deployment architecture — the two sites, what is donated vs. personal, what data gets collected and how, and the seven design decisions behind the split. Self-contained; prints clean. |
