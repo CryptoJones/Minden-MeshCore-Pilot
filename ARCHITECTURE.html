@@ -1,0 +1,492 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minden Mesh Pilot</title>
+
+<style>
+/* ── CYBERDECK tokens (CryptoJones/cyberdeck-theme) ────────────────── */
+:root {
+  --bg:        #07090f;
+  --panel:     #0c1018f2;
+  --fg:        #cfd8e3;
+  --accent:    #27d4ff;
+  --stamp:     #55ff99;
+  --dim:       #5a6678;
+  --dim2:      #3a4456;
+  --muted:     #88aaaa;
+  --alert:     #ff4f4f;
+  --hover:     #101826;
+  --active:    #13233a;
+  --hairline:  #141a26;
+  --cat-cyan:    #27d4ff;  --cat-magenta: #ff4fd8;  --cat-orange: #ff9b3d;
+  --cat-green:   #7dff6e;  --cat-yellow:  #ffe14f;  --cat-violet: #b8a8ff;
+  --cat-red:     #ff6e6e;  --cat-pink:    #ffb3d9;  --cat-mint:   #9fffe0;
+
+  --civic: var(--cat-orange);    /* donated to the city */
+  --mine:  var(--cat-violet);    /* personal instrumentation */
+  --mc:    var(--cat-magenta);   /* MeshCore */
+  --mt:    var(--cat-green);     /* Meshtastic */
+}
+
+body { background: var(--bg); color: var(--fg);
+  font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  margin: 0; font-size: 20px; }
+
+header { position: sticky; top: 0; background: var(--panel);
+  backdrop-filter: blur(6px);
+  border-bottom: 2px solid var(--accent); padding: 14px 18px; z-index: 9; }
+h1 { font-size: 26px; margin: 0 0 10px; color: var(--accent);
+  text-shadow: 0 0 12px #27d4ff66; text-wrap: balance; }
+h1 small { color: #888; font-size: 16px; }
+.legend { font-size: 15px; color: var(--muted); margin-top: 8px;
+  display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; }
+.chip { display: inline-flex; align-items: baseline; gap: 7px; }
+.chip i { width: 11px; height: 11px; border-radius: 2px; display: inline-block;
+  flex: none; transform: translateY(1px); }
+
+main { max-width: 1000px; margin: 0 auto; padding: 30px 18px 90px; }
+section { margin: 0 0 46px; }
+h2 { font-size: 17px; color: var(--accent); margin: 0 0 14px;
+  letter-spacing: .13em; text-transform: uppercase; font-weight: bold; }
+h2::before { content: "▚ "; color: var(--dim2); }
+h3 { font-size: 16px; color: var(--fg); margin: 26px 0 10px;
+  letter-spacing: .06em; text-transform: uppercase; }
+p { line-height: 1.5; margin: 0 0 15px; max-width: 68ch; }
+b, strong { color: #eaf2fa; }
+em { color: var(--stamp); font-style: normal; }
+ul { line-height: 1.5; max-width: 68ch; padding-left: 22px; }
+li { margin-bottom: 8px; }
+
+.callout { border-left: 5px solid var(--accent); background: #0b1620;
+  padding: 15px 20px; margin: 0 0 22px; }
+.callout p:last-child { margin: 0; }
+.big { font-size: 26px; color: var(--accent); text-shadow: 0 0 14px #27d4ff55; }
+
+figure { margin: 0 0 12px; }
+.scroll { overflow-x: auto; }
+svg { max-width: 100%; height: auto; display: block; }
+figcaption { font-size: 15px; color: var(--muted); margin-top: 10px;
+  line-height: 1.45; max-width: 76ch; }
+
+.rows { border-top: 1px solid var(--hairline); margin-bottom: 20px; }
+.row { display: flex; gap: 14px; padding: 10px 18px;
+  border-bottom: 1px solid var(--hairline); align-items: baseline; }
+.row:hover { background: var(--hover); }
+.t { color: var(--stamp); min-width: 104px; flex: none;
+  font-variant-numeric: tabular-nums; }
+.v { min-width: 132px; flex: none; font-weight: bold; }
+.x { flex: 1; line-height: 1.45; }
+.row.dim { font-size: 16px; color: var(--dim); }
+.row.dim .v { color: var(--dim2); }
+.fixed { background: #1a0f14; border-left: 5px solid var(--alert); }
+.fix { flex: none; font-size: 16px; color: var(--alert); }
+.row.hi { background: var(--active); outline: 1px solid #27d4ff55; }
+.hdr { font-size: 14px; color: var(--dim2); letter-spacing: .12em;
+  text-transform: uppercase; border-bottom: 1px solid var(--hairline);
+  padding: 0 18px 8px; display: flex; gap: 14px; }
+.hdr .t, .hdr .v { color: var(--dim2); font-weight: normal; }
+
+code { color: var(--stamp); font-size: .92em; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+hr { border: 0; border-top: 1px solid var(--hairline); margin: 40px 0; }
+.note { color: var(--dim); font-size: 16px; }
+
+/* ── SVG classes ───────────────────────────────────────────────────── */
+.s-struct { stroke: var(--dim);    stroke-width: 1.6; fill: none; }
+.s-dim    { stroke: var(--muted);  stroke-width: 1.3; fill: none; }
+.s-ext    { stroke: var(--dim2);   stroke-width: 1;   fill: none;
+            stroke-dasharray: 3 4; }
+.s-grid   { stroke: var(--hairline); stroke-width: 1; fill: none; }
+.s-axis   { stroke: var(--dim2);   stroke-width: 1.4; fill: none; }
+.s-bound  { stroke: var(--dim2);   stroke-width: 1.6; fill: none;
+            stroke-dasharray: 10 8; }
+.s-link   { stroke: var(--mc); stroke-width: 2.4; fill: none;
+            stroke-dasharray: 10 7; }
+.s-rx     { stroke: var(--mt); stroke-width: 2.4; fill: none;
+            stroke-dasharray: 10 7; }
+.s-hit    { stroke: var(--alert); stroke-width: 2.4; fill: none; }
+.s-dead   { stroke: var(--dim2); stroke-width: 2; fill: none;
+            stroke-dasharray: 7 6; }
+.box-civ  { fill: #1a1109; stroke: var(--civic); stroke-width: 1.6; }
+.box-mine { fill: #14111f; stroke: var(--mine); stroke-width: 1.6; }
+.box-mc   { fill: #1a0d17; stroke: var(--mc); stroke-width: 1.5; }
+.box-mt   { fill: #0d1a12; stroke: var(--mt); stroke-width: 1.5; }
+.box-pi   { fill: #0b1620; stroke: var(--accent); stroke-width: 1.8; }
+.el-mc    { stroke: var(--mc); stroke-width: 3.4; fill: none; }
+.el-mt    { stroke: var(--mt); stroke-width: 3.4; fill: none; }
+.cv-v     { stroke: var(--cat-cyan); stroke-width: 3; fill: none;
+            stroke-linejoin: round; stroke-linecap: round; }
+.cv-h     { stroke: var(--cat-orange); stroke-width: 3; fill: none;
+            stroke-linejoin: round; stroke-linecap: round; }
+.s-target { stroke: var(--accent); stroke-width: 1.4; fill: none;
+            stroke-dasharray: 7 6; }
+
+text { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+       fill: var(--fg); font-size: 15px; }
+.lbl   { font-size: 15px; fill: var(--fg); }
+.lbl-s { font-size: 13px; fill: var(--muted); }
+.lbl-x { font-size: 12px; fill: var(--dim); letter-spacing: .1em; }
+.eyebrow { font-size: 12px; fill: var(--dim2); letter-spacing: .18em; }
+.num   { font-size: 15px; fill: var(--stamp); }
+.t-civ { fill: var(--civic); font-size: 15px; font-weight: bold; }
+.t-min { fill: var(--mine);  font-size: 15px; font-weight: bold; }
+.t-mc  { fill: var(--mc);    font-size: 14px; font-weight: bold; }
+.t-mt  { fill: var(--mt);    font-size: 14px; font-weight: bold; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .glow { filter: drop-shadow(0 0 7px #27d4ff70); }
+}
+@media (max-width: 640px) {
+  body { font-size: 18px; }
+  .row, .hdr { flex-wrap: wrap; gap: 6px 14px; }
+  .t, .v { min-width: 78px; }
+}
+
+/* ── print: flip the deck to paper ─────────────────────────────────── */
+@media print {
+  :root {
+    --bg: #ffffff; --panel: #ffffff; --fg: #14171c;
+    --accent: #0b5c78; --stamp: #0a6b3d; --muted: #4a5560;
+    --dim: #5c6672; --dim2: #7a838f; --hairline: #ccd2d8;
+    --hover: #ffffff; --active: #eef4f8; --alert: #a8342a;
+    --civic: #9a5a12; --mine: #5a4a9a;
+    --mc: #9a2b78; --mt: #1f6b2e;
+    --cat-cyan: #0b5c78; --cat-orange: #9a5a12;
+  }
+  body { font-size: 10.5pt; }
+  header { position: static; border-bottom: 1.5pt solid var(--accent); }
+  h1 { text-shadow: none; }
+  .glow { filter: none; }
+  .big { text-shadow: none; }
+  .callout { background: #f2f6f9; border-left-color: var(--accent); }
+  .fixed { background: #faf0ef; }
+  .row.hi { background: #eef4f8; outline: none; }
+  .box-civ, .box-mine, .box-mc, .box-mt, .box-pi { fill: #ffffff; }
+  main { max-width: none; padding: 12pt 0 0; }
+  section, figure, .rows { break-inside: avoid; }
+  h2 { break-after: avoid; }
+  a { color: var(--accent); }
+}
+</style>
+
+<header>
+  <h1>MINDEN MESH PILOT <small>· off-grid community messaging · Minden, NE</small></h1>
+  <div class="legend">
+    <span class="chip"><i style="background:var(--civic)"></i>DONATED — City of Minden</span>
+    <span class="chip"><i style="background:var(--mine)"></i>PERSONAL — not city infrastructure</span>
+    <span class="chip"><i style="background:var(--mc)"></i>MeshCore</span>
+    <span class="chip"><i style="background:var(--mt)"></i>Meshtastic · RX only</span>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <div class="callout">
+    <p><span class="big">One donated node. Everything else is yours.</span></p>
+    <p>The city receives a single sealed solar repeater on the siren pole and is
+    asked to host nothing else — no computer, no account, no maintenance. The
+    historian, the logs, and the monitoring all live on personal hardware in a
+    personal window, on personal power.</p>
+  </div>
+  <p>That boundary is the design. It keeps the civic footprint to the smallest
+  thing a city can say yes to, and it settles the data question before anyone
+  raises it: nothing the city owns is collecting anything.</p>
+</section>
+
+<section>
+  <h2>Two sites</h2>
+  <figure class="scroll">
+    <svg viewBox="0 0 900 520" role="img" aria-label="Two-site topology. Left of a dashed ownership boundary: a SenseCAP P1-Pro solar MeshCore repeater on the city siren pole, donated. Right of the boundary: a window on mains power holding a MeshCore companion node, a receive-only Meshtastic node, and a Raspberry Pi historian, all personal. A bidirectional MeshCore LoRa link crosses the boundary between pole and window. A separate one-way receive-only arrow comes down from empty Meshtastic airspace into the Meshtastic node.">
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+                markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--mc)"/>
+        </marker>
+        <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+                markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--mt)"/>
+        </marker>
+        <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"
+                markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+        <pattern id="hz" width="12" height="12" patternUnits="userSpaceOnUse"
+                 patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="12" stroke="#22303f" stroke-width="1.4"/>
+        </pattern>
+      </defs>
+
+      <!-- ownership boundary -->
+      <line class="s-bound" x1="440" y1="58" x2="440" y2="486"/>
+      <text class="t-civ" x="60"  y="42">DONATED — CITY OF MINDEN</text>
+      <text class="t-min" x="462" y="42">PERSONAL — NOT CITY INFRASTRUCTURE</text>
+
+      <!-- ── LEFT: the siren pole ── -->
+      <line class="s-struct" x1="60" y1="420" x2="400" y2="420"/>
+      <rect x="60" y="421" width="340" height="14" fill="url(#hz)"/>
+
+      <rect x="176" y="150" width="10" height="270" fill="#1b2430"
+            stroke="var(--dim2)" stroke-width="1"/>
+      <line class="el-mc" x1="181" y1="96" x2="181" y2="150"/>
+      <circle cx="181" cy="150" r="4.5" fill="var(--mc)"/>
+
+      <polygon points="112,222 246,194 252,210 118,238" class="box-civ"/>
+      <rect class="box-civ" x="126" y="248" width="112" height="76" rx="2"/>
+      <text class="lbl-s" x="138" y="272" fill="var(--civic)">SENSECAP</text>
+      <text class="lbl-s" x="138" y="292">P1-PRO</text>
+      <text class="lbl-s" x="138" y="312">solar · sealed</text>
+
+      <text class="t-mc"  x="70" y="452">MESHCORE REPEATER</text>
+      <text class="lbl-s" x="70" y="474">pre-flashed · no memory of its own</text>
+
+      <!-- ── link across the boundary ── -->
+      <path class="s-link" d="M188,116 Q380,150 596,286"
+            marker-start="url(#a1)" marker-end="url(#a1)"/>
+      <text class="t-mc"  x="286" y="182">MeshCore · 910.525 MHz</text>
+      <text class="lbl-s" x="286" y="202">advertisements + polled telemetry</text>
+
+      <!-- ── Meshtastic airspace ── -->
+      <rect x="676" y="58" width="212" height="58" rx="26"
+            fill="none" stroke="var(--mt)" stroke-width="1.4"
+            stroke-dasharray="7 6"/>
+      <text class="t-mt"  x="782" y="82"  text-anchor="middle">MESHTASTIC AIRSPACE</text>
+      <text class="lbl-s" x="782" y="102" text-anchor="middle">no local population yet</text>
+      <path class="s-rx" d="M782,120 L782,244" marker-end="url(#a2)"/>
+      <text class="lbl-x" x="794" y="186" fill="var(--mt)">RX ONLY</text>
+
+      <!-- ── RIGHT: the window ── -->
+      <rect x="574" y="150" width="260" height="182" rx="2"
+            fill="none" stroke="var(--dim)" stroke-width="2"/>
+      <line class="s-grid" x1="704" y1="150" x2="704" y2="332"/>
+      <line class="s-grid" x1="574" y1="241" x2="834" y2="241"/>
+      <text class="eyebrow" x="574" y="140">WINDOW · CONTINUOUS AC USB</text>
+
+      <rect class="box-mc" x="596" y="252" width="98" height="62" rx="2"/>
+      <text class="t-mc"  x="645" y="278" text-anchor="middle">MESHCORE</text>
+      <text class="lbl-s" x="645" y="298" text-anchor="middle">companion</text>
+
+      <rect class="box-mt" x="716" y="252" width="98" height="62" rx="2"/>
+      <text class="t-mt"  x="765" y="278" text-anchor="middle">MESHTASTIC</text>
+      <text class="lbl-s" x="765" y="298" text-anchor="middle">listen only</text>
+
+      <line class="s-struct" x1="558" y1="332" x2="850" y2="332"/>
+
+      <rect class="box-pi" x="628" y="376" width="176" height="64" rx="2"/>
+      <text class="lbl glow" x="716" y="402" text-anchor="middle"
+            fill="var(--accent)">RASPBERRY PI</text>
+      <text class="lbl-s"    x="716" y="424" text-anchor="middle">historian · SQLite</text>
+
+      <line class="s-dim" x1="645" y1="336" x2="662" y2="372"
+            marker-end="url(#a3)"/>
+      <line class="s-dim" x1="765" y1="336" x2="748" y2="372"
+            marker-end="url(#a3)"/>
+      <text class="lbl-x" x="716" y="360" text-anchor="middle">USB</text>
+
+      <text class="t-min" x="574" y="472">PERSONAL INSTRUMENTATION</text>
+      <text class="lbl-s" x="574" y="492">mains powered · on the home LAN</text>
+    </svg>
+    <figcaption>The dashed line is the scope boundary, not a fence — the MeshCore
+    link crosses it freely. What doesn't cross is <em>obligation</em>: everything
+    right of the line is powered, owned, maintained, and read by one person. The
+    Meshtastic side has no link to the pole at all; it is a silent receiver
+    pointed at airspace that is currently empty.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>The window bench — why two radios is fine here</h2>
+  <figure class="scroll">
+    <svg viewBox="0 0 900 420" role="img" aria-label="Asymmetric interference at the window. The MeshCore companion transmits and receives, so while transmitting it briefly desenses the Meshtastic receiver — a tolerable one to five percent duty cycle. The Meshtastic node is receive-only and never transmits, so the reverse interference path does not exist and is drawn crossed out. Both connect by USB to the Raspberry Pi.">
+      <defs>
+        <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+                markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--alert)"/>
+        </marker>
+        <marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"
+                markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+
+      <text class="eyebrow" x="60" y="34">ONE TRANSMITTER · ONE SILENT RECEIVER</text>
+
+      <line class="el-mc" x1="250" y1="76" x2="250" y2="140"/>
+      <circle cx="250" cy="140" r="5" fill="var(--mc)"/>
+      <line class="el-mt" x1="650" y1="76" x2="650" y2="140"/>
+      <circle cx="650" cy="140" r="5" fill="var(--mt)"/>
+
+      <!-- real interference path -->
+      <path class="s-hit" d="M268,104 L632,104" marker-end="url(#b1)"/>
+      <text class="lbl-s" x="450" y="80" text-anchor="middle" fill="var(--alert)">desense while transmitting</text>
+      <text class="lbl-x" x="450" y="62" text-anchor="middle">1–5 % DUTY CYCLE · TOLERABLE</text>
+
+      <!-- absent path -->
+      <path class="s-dead" d="M632,132 L268,132"/>
+      <line x1="440" y1="122" x2="460" y2="142" stroke="var(--alert)" stroke-width="2.4"/>
+      <line x1="460" y1="122" x2="440" y2="142" stroke="var(--alert)" stroke-width="2.4"/>
+      <text class="lbl-s" x="450" y="166" text-anchor="middle" fill="var(--dim)">never — the receiver is silent</text>
+
+      <rect class="box-mc" x="160" y="196" width="180" height="84" rx="2"/>
+      <text class="t-mc"  x="250" y="224" text-anchor="middle">MESHCORE</text>
+      <text class="lbl-s" x="250" y="246" text-anchor="middle">companion</text>
+      <text class="num"   x="250" y="268" text-anchor="middle">TX + RX</text>
+
+      <rect class="box-mt" x="560" y="196" width="180" height="84" rx="2"/>
+      <text class="t-mt"  x="650" y="224" text-anchor="middle">MESHTASTIC</text>
+      <text class="lbl-s" x="650" y="246" text-anchor="middle">observe mode</text>
+      <text class="num"   x="650" y="268" text-anchor="middle">RX ONLY</text>
+
+      <rect class="box-pi" x="366" y="316" width="168" height="64" rx="2"/>
+      <text class="lbl glow" x="450" y="342" text-anchor="middle"
+            fill="var(--accent)">RASPBERRY PI</text>
+      <text class="lbl-s"    x="450" y="364" text-anchor="middle">bridge.py</text>
+
+      <line class="s-dim" x1="250" y1="284" x2="362" y2="336" marker-end="url(#b2)"/>
+      <line class="s-dim" x1="650" y1="284" x2="538" y2="336" marker-end="url(#b2)"/>
+    </svg>
+    <figcaption>The interference problem is <em>one-directional</em>, and that is
+    what makes colocation acceptable. A silent receiver cannot blind anything; it
+    only loses the small share of packets arriving while the MeshCore node happens
+    to be transmitting. A couple of feet of separation is plenty. The 10 ft
+    vertical figure below applies only if a second <em>transmitter</em> ever
+    appears here.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Hardware</h2>
+  <div class="hdr"><span class="t">SITE</span><span class="v">HARDWARE</span><span class="x">ROLE</span></div>
+  <div class="rows">
+    <div class="row hi"><span class="t" style="color:var(--civic)">POLE</span><span class="v" style="color:var(--civic)">SenseCAP P1-Pro</span><span class="x"><b>Donated.</b> MeshCore repeater, pre-flashed, solar, sealed. ~$150 — the one node where reliability beats cost.</span></div>
+    <div class="row"><span class="t" style="color:var(--mine)">WINDOW</span><span class="v" style="color:var(--mc)">Wio Tracker L1</span><span class="x">MeshCore companion — historian's radio and the <code>!bridge</code> command endpoint.</span></div>
+    <div class="row"><span class="t" style="color:var(--mine)">WINDOW</span><span class="v" style="color:var(--mt)">XIAO ESP32-S3</span><span class="x">Meshtastic receive-only collector. Mains powered, so its idle draw is irrelevant.</span></div>
+    <div class="row"><span class="t" style="color:var(--mine)">WINDOW</span><span class="v" style="color:var(--accent)">Raspberry Pi</span><span class="x">Historian and command endpoint. SQLite on a USB SSD, <em>not</em> the SD card.</span></div>
+    <div class="row dim"><span class="t">COVERAGE</span><span class="v">$35 solar node</span><span class="x">Future density — accessible sites only. Build one now as the bench unit.</span></div>
+  </div>
+  <p class="note">The pole gets hardened hardware for four reasons: lithium cannot
+  be charged below 0&nbsp;°C without permanent damage and Minden sees −10&nbsp;°C
+  winters; the battery is the very thing under test, so an undersized pack makes
+  the pilot fail for reasons unrelated to mesh; one bucket-truck visit costs more
+  than the hardware saved; and off-the-shelf rated gear clears a city facilities
+  review in a way a hand-built node does not.</p>
+</section>
+
+<section>
+  <h2>What gets collected, and how</h2>
+  <p>A MeshCore repeater keeps no history — it answers with an instantaneous
+  snapshot and forgets. The Pi is therefore the single source of truth for
+  anything time-series, and it collects two different ways:</p>
+  <div class="hdr"><span class="t">MODE</span><span class="v">COSTS AIRTIME?</span><span class="x">WHAT IT YIELDS</span></div>
+  <div class="rows">
+    <div class="row hi"><span class="t">Passive</span><span class="v" style="color:var(--stamp)">No</span><span class="x">Advertisements, SNR/RSSI, hop paths, node census. Reachability derives from observed traffic — free, and it degrades honestly.</span></div>
+    <div class="row"><span class="t">Polled</span><span class="v" style="color:var(--cat-orange)">Yes</span><span class="x">Battery, uptime counters — the things advertisements don't carry. Authenticated, sparing.</span></div>
+  </div>
+  <p><b>Passive first, poll sparingly.</b> A repeater that stops answering polls
+  might merely be busy; a repeater that stops advertising is genuinely gone. The
+  free signal is also the more truthful one.</p>
+  <p>Bulk history never moves over the mesh — a LoRa message is a few hundred
+  bytes and rate-limited. Over the air you get a one-message summary; the complete
+  dataset is pulled off the Pi directly over the home LAN, which is trivial now
+  that the Pi lives on it.</p>
+</section>
+
+<section>
+  <h2>Design decisions</h2>
+  <div class="hdr"><span class="t">ID</span><span class="v">DECISION</span><span class="x">RATIONALE</span></div>
+  <div class="rows">
+    <div class="row"><span class="t">DD-001</span><span class="v">Community messaging</span><span class="x">Not "emergency comms". Emergency resilience is the wedge for pitching a city; carrier-free everyday communication is the mission.</span></div>
+    <div class="row"><span class="t">DD-002</span><span class="v">Bridge is historian</span><span class="x">The repeater has no memory, so the Pi polls and persists. Outages stored as <code>reachable=0</code> so gaps are real data.</span></div>
+    <div class="row"><span class="t">DD-003</span><span class="v">Summaries over air</span><span class="x">One question, one short answer. No raw rows, no pagination. Detail comes off the Pi out-of-band.</span></div>
+    <div class="row"><span class="t">DD-004</span><span class="v">MeshCore only</span><span class="x">Greenfield with no Meshtastic population. Bridge code kept, not deleted — enabling it should be config, not a rewrite.</span></div>
+    <div class="row"><span class="t">DD-005</span><span class="v">Two sites</span><span class="x">Solar repeater on the pole, mains historian in a window. Evaluation data without a second install on the pole.</span></div>
+    <div class="row"><span class="t">DD-006</span><span class="v">Two hardware tiers</span><span class="x">Hardened pole unit; cheap coverage nodes everywhere accessible. Density is the product, cost per node is the ceiling.</span></div>
+    <div class="row hi"><span class="t">DD-007</span><span class="v">Donation is one node</span><span class="x">The Pi is personal instrumentation. The Meshtastic receiver is a survey instrument that measures DD-004 instead of assuming it.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Open work</h2>
+  <div class="rows" style="border-top:1px solid var(--hairline)">
+    <div class="row fixed"><span class="t">code</span><span class="v">MeshCore RX</span><span class="x">Subscribe to <code>CHANNEL_MSG_RECV</code>, route to <code>on_meshcore_text</code>. Needs one node on the bench — not one of each.</span><span class="fix">TODO</span></div>
+    <div class="row fixed"><span class="t">code</span><span class="v">MeshCore TX</span><span class="x">Confirm <code>send_chan_msg</code> signature against the installed library version.</span><span class="fix">TODO</span></div>
+    <div class="row"><span class="t">code</span><span class="v"><code>observe</code> mode</span><span class="x">Connect, receive, log, never transmit. What the window's Meshtastic node runs.</span></div>
+    <div class="row"><span class="t">code</span><span class="v">Historian</span><span class="x">SQLite time-series; <code>packets</code> and <code>nodes</code> tables kept separate from polled readings.</span></div>
+    <div class="row"><span class="t">hw</span><span class="v">Bench node</span><span class="x">Build one $35 solar node now to validate firmware and the polling loop before anything goes up a pole.</span></div>
+    <div class="row"><span class="t">hw</span><span class="v">Window antenna</span><span class="x">Low-E glass attenuates 900 MHz badly. Get the antenna outside or at the glass; verify link margin to the pole first.</span></div>
+    <div class="row dim"><span class="t">policy</span><span class="v">Retention</span><span class="x">90-day rolling window; non-infrastructure node IDs salted and hashed at write time.</span></div>
+  </div>
+</section>
+
+<hr>
+
+<section>
+  <h2>Appendix — if a second transmitter ever appears</h2>
+  <p>Not needed for this build. Filed here because the moment anything at the
+  window <em>transmits</em> on a second network, these numbers become binding.</p>
+  <figure class="scroll">
+    <svg viewBox="0 0 900 470" role="img" aria-label="Log-scale plot of antenna isolation in decibels against separation in feet at 915 megahertz. The vertical-stack curve crosses the 67 decibel target at 10 feet; the horizontal curve does not reach it until 191 feet.">
+      <text class="eyebrow" x="110" y="30">ISOLATION (dB) vs SEPARATION (ft) · 915 MHz · λ = 1.076 ft</text>
+
+      <line class="s-grid" x1="110" y1="335" x2="850" y2="335"/>
+      <line class="s-grid" x1="110" y1="280" x2="850" y2="280"/>
+      <line class="s-grid" x1="110" y1="225" x2="850" y2="225"/>
+      <line class="s-grid" x1="110" y1="170" x2="850" y2="170"/>
+      <line class="s-grid" x1="110" y1="115" x2="850" y2="115"/>
+      <line class="s-grid" x1="110" y1="60"  x2="850" y2="60"/>
+      <line class="s-grid" x1="207" y1="60" x2="207" y2="390"/>
+      <line class="s-grid" x1="263" y1="60" x2="263" y2="390"/>
+      <line class="s-grid" x1="335" y1="60" x2="335" y2="390"/>
+      <line class="s-grid" x1="432" y1="60" x2="432" y2="390"/>
+      <line class="s-grid" x1="528" y1="60" x2="528" y2="390"/>
+      <line class="s-grid" x1="656" y1="60" x2="656" y2="390"/>
+      <line class="s-grid" x1="753" y1="60" x2="753" y2="390"/>
+
+      <line class="s-axis" x1="110" y1="60"  x2="110" y2="390"/>
+      <line class="s-axis" x1="110" y1="390" x2="850" y2="390"/>
+
+      <text class="lbl-s" x="100" y="395" text-anchor="end">20</text>
+      <text class="lbl-s" x="100" y="340" text-anchor="end">30</text>
+      <text class="lbl-s" x="100" y="285" text-anchor="end">40</text>
+      <text class="lbl-s" x="100" y="230" text-anchor="end">50</text>
+      <text class="lbl-s" x="100" y="175" text-anchor="end">60</text>
+      <text class="lbl-s" x="100" y="120" text-anchor="end">70</text>
+      <text class="lbl-s" x="100" y="65"  text-anchor="end">80</text>
+
+      <text class="lbl-s" x="110" y="412" text-anchor="middle">1</text>
+      <text class="lbl-s" x="207" y="412" text-anchor="middle">2</text>
+      <text class="lbl-s" x="263" y="412" text-anchor="middle">3</text>
+      <text class="lbl-s" x="335" y="412" text-anchor="middle">5</text>
+      <text class="lbl-s" x="432" y="412" text-anchor="middle">10</text>
+      <text class="lbl-s" x="528" y="412" text-anchor="middle">20</text>
+      <text class="lbl-s" x="656" y="412" text-anchor="middle">50</text>
+      <text class="lbl-s" x="753" y="412" text-anchor="middle">100</text>
+      <text class="lbl-s" x="850" y="412" text-anchor="middle">200</text>
+      <text class="lbl-x" x="480" y="440" text-anchor="middle">SEPARATION — FEET (LOG)</text>
+
+      <line class="s-target" x1="110" y1="132" x2="850" y2="132"/>
+      <text class="lbl-s" x="118" y="124" fill="var(--accent)">67 dB — protects weak / fringe links</text>
+
+      <polyline class="cv-v" points="110,353 207,287 263,248 335,199 432,133 528,67 539,60"/>
+      <polyline class="cv-h" points="110,382 207,349 263,330 335,306 432,272 528,239 656,196 753,162 850,129"/>
+
+      <circle cx="432" cy="132" r="7" fill="var(--bg)" stroke="var(--cat-cyan)" stroke-width="3"/>
+      <text class="lbl" x="444" y="102" fill="var(--cat-cyan)">10 ft</text>
+      <circle cx="844" cy="132" r="7" fill="var(--bg)" stroke="var(--cat-orange)" stroke-width="3"/>
+      <text class="lbl" x="838" y="102" text-anchor="end" fill="var(--cat-orange)">191 ft</text>
+
+      <text class="lbl"   x="330" y="186" text-anchor="end" fill="var(--cat-cyan)">VERTICAL</text>
+      <text class="lbl-x" x="330" y="204" text-anchor="end">28 + 40·log₁₀(d/λ)</text>
+      <text class="lbl"   x="690" y="228" fill="var(--cat-orange)">HORIZONTAL</text>
+      <text class="lbl-x" x="690" y="246">22 + 20·log₁₀(d/λ)</text>
+    </svg>
+    <figcaption>Two transmitters at 915 MHz need ~67 dB of isolation to protect
+    weak links. Vertical stacking gains 40 dB per decade of separation, horizontal
+    only 20 — so 10 ft stacked equals roughly 191 ft side by side. Stack, never
+    side by side; below ~3 ft, budget for a cavity or notch filter, since ceramic
+    and SAW parts cannot deliver in-band isolation.</figcaption>
+  </figure>
+</section>
+
+</main>

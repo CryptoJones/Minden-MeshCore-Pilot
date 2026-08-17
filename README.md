@@ -18,6 +18,7 @@ is the reason for the platform choice — see Section 3 of the proposal.
 | `REPEATER-BUILD.md` | Build sheet for the pole-mounted solar repeater (parts, assembly, MeshCore config) |
 | `SOLAR-TEST.html` | Bench procedure for measuring a solar panel's real output with a Klein MM325. Open in any browser. |
 | `proposal.html` | The full council proposal — one self-contained HTML page. Open it in any browser to read or print. |
+| `ARCHITECTURE.html` | Deployment architecture — the two sites, what is donated vs. personal, what data gets collected and how, and the seven design decisions behind the split. Self-contained; prints clean. |
 
 ## Editing the proposal on another machine
 
