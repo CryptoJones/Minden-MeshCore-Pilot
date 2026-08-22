@@ -27,10 +27,20 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import glob
 import html
+import ipaddress
 import json
 import os
+import re
+import subprocess
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+# Restart actions are performed by a small root-owned helper, invoked through a
+# single NOPASSWD sudoers entry. The web process itself stays unprivileged.
+HELPER = "/usr/local/sbin/meshbridge-restart"
+BUSID_RE = re.compile(r"^\d+-\d+(\.\d+)*$")
 
 # Counters that only ever climb while the repeater stays up.
 COUNTERS = [
@@ -56,6 +66,63 @@ def _parse_ts(v):
         return dt.datetime.fromisoformat(v)
     except (TypeError, ValueError):
         return None
+
+
+def usb_busid(tty_path: str) -> str | None:
+    """Walk from a tty up to the USB *device* that owns it, e.g. '1-1.2'.
+
+    Unbinding needs the device, not the interface: the interface node is named
+    '1-1.2:1.0' and the usb driver will not accept it. So climb until the name
+    has no colon in it.
+    """
+    dev = os.path.realpath(f"/sys/class/tty/{os.path.basename(tty_path)}/device")
+    while dev and dev != "/":
+        name = os.path.basename(dev)
+        if BUSID_RE.match(name) and os.path.exists(f"/sys/bus/usb/devices/{name}"):
+            return name
+        dev = os.path.dirname(dev)
+    return None
+
+
+def list_radios() -> list[dict]:
+    """Serial radios currently attached, with the USB id needed to reset them."""
+    out = []
+    for link in sorted(glob.glob("/dev/serial/by-id/*")):
+        target = os.path.realpath(link)
+        try:
+            busid = usb_busid(target)
+        except OSError:
+            busid = None
+        out.append({"name": os.path.basename(link), "dev": target, "busid": busid})
+    return out
+
+
+def client_allowed(addr: str, cidrs: list) -> bool:
+    """Restart controls are limited to the Pi's own AP subnet (and loopback).
+
+    Enforced here rather than by hiding the buttons: hiding a control in HTML is
+    not a restriction, it is a suggestion.
+    """
+    try:
+        ip = ipaddress.ip_address(addr)
+    except ValueError:
+        return False
+    if ip.is_loopback:
+        return True
+    return any(ip in net for net in cidrs)
+
+
+def run_helper(args: list[str]) -> tuple[bool, str]:
+    try:
+        p = subprocess.run(["sudo", "-n", HELPER, *args], capture_output=True,
+                           text=True, timeout=25)
+    except FileNotFoundError:
+        return False, "sudo or helper not installed"
+    except subprocess.TimeoutExpired:
+        return False, "helper timed out"
+    if p.returncode != 0:
+        return False, (p.stderr or p.stdout or f"exit {p.returncode}").strip()
+    return True, (p.stdout or "ok").strip()
 
 
 def load(path: str) -> list[dict]:
@@ -223,7 +290,42 @@ def bar_strip(points, width=520, height=28) -> str:
             f'role="img">{"".join(bars)}</svg>')
 
 
-def render(s: dict, csv_path: str, refresh: int) -> str:
+def controls_html(radios: list[dict], can_restart: bool, ap_cidr: str) -> str:
+    if not can_restart:
+        return (f'<section><h2>Restart</h2><div class="nodata">Restart controls are '
+                f'only available to clients on the Pi\'s own access point '
+                f'(<code>{html.escape(ap_cidr)}</code>). You are viewing from another '
+                f'network.</div></section>')
+
+    if radios:
+        buttons = "".join(
+            f'<form method="post" action="/restart/radio">'
+            f'<input type="hidden" name="busid" value="{html.escape(r["busid"] or "")}">'
+            f'<button class="btn" {"disabled" if not r["busid"] else ""} '
+            f'onclick="return confirm(\'Power-cycle {html.escape(r["name"])}?\\n\\n'
+            f'This is the same as unplugging and replugging it. A MeshCore node will '
+            f'lose its clock (it has no RTC).\')">Power-cycle</button>'
+            f'<span class="dev"><b>{html.escape(r["name"])}</b><br>'
+            f'<small>{html.escape(r["dev"])}'
+            f'{" · usb " + html.escape(r["busid"]) if r["busid"] else " · no USB id — cannot reset"}'
+            f'</small></span></form>'
+            for r in radios)
+    else:
+        buttons = ('<div class="nodata">No serial radios attached. Plug one in and '
+                   'reload — nothing to restart yet.</div>')
+
+    return f"""<section><h2>Restart</h2>
+{buttons}
+<form method="post" action="/restart/pi">
+  <button class="btn danger" onclick="return confirm('Reboot the Raspberry Pi?\\n\\nThe access point you are connected through will drop for about a minute.')">Reboot the Pi</button>
+  <span class="dev"><b>Raspberry Pi</b><br><small>drops this AP for ~1 min while it comes back</small></span>
+</form>
+</section>"""
+
+
+def render(s: dict, csv_path: str, refresh: int,
+           radios: list[dict] | None = None, can_restart: bool = False,
+           ap_cidr: str = "10.13.37.0/24", notice: str = "") -> str:
     cur = s["current"] or {}
     up = _num(cur.get("uptime_s"))
     bat = s["gauges"].get("battery_last_mv")
@@ -314,10 +416,22 @@ svg{{width:100%;height:auto;display:block;color:var(--accent)}}
 .warn{{background:var(--card);border:1px solid var(--edge);border-left:4px solid var(--accent);border-radius:9px;padding:13px 15px;margin:14px 0;font-size:14px}}
 code{{background:rgba(128,128,128,.16);padding:1px 5px;border-radius:4px;font-size:12.5px}}
 footer{{color:var(--mut);font-size:12px;margin-top:20px;line-height:1.7}}
+form{{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--edge)}}
+form:last-child{{border-bottom:0}}
+.btn{{flex:none;background:var(--accent);color:#fff;border:0;border-radius:8px;
+  padding:9px 15px;font-size:14px;font-weight:640;cursor:pointer;min-width:132px}}
+.btn:hover{{filter:brightness(1.08)}}
+.btn:disabled{{background:var(--idle);cursor:not-allowed}}
+.btn.danger{{background:var(--down)}}
+.dev small{{color:var(--mut);font-size:12px;word-break:break-all}}
+.notice{{background:var(--card);border:1px solid var(--edge);border-left:4px solid var(--ok);
+  border-radius:9px;padding:11px 14px;margin:12px 0;font-size:14px}}
+.notice.bad{{border-left-color:var(--down)}}
 </style></head><body><div class="wrap">
 <h1>MeshCore Repeater — Cumulative Metrics</h1>
 <p class="sub"><span class="state {state_cls}">{state_txt}</span>
 &nbsp;last poll {html.escape(str(s["last_poll"] or "never"))} · first {html.escape(str(s["first_seen"] or "—"))}</p>
+{notice}
 {empty_note}
 <div class="grid">{"".join(
     f'<div class="card"><div class="k">{html.escape(k)}</div><div class="v">{html.escape(v)}</div>'
@@ -326,6 +440,7 @@ footer{{color:var(--mut);font-size:12px;margin-top:20px;line-height:1.7}}
 <section><h2>Battery</h2>{sparkline(s["battery_series"])}</section>
 <section><h2>Traffic totals (reboot-adjusted)</h2>{rows(traffic)}</section>
 <section><h2>RF conditions</h2>{rows(rf)}</section>
+{controls_html(radios or [], can_restart, ap_cidr)}
 <footer>
 Totals are accumulated from per-poll deltas. The repeater's counters reset when it
 loses power, so a drop in uptime is treated as a reboot boundary — without that,
@@ -336,7 +451,7 @@ no authentication.
 </div></body></html>"""
 
 
-def make_handler(csv_path: str, refresh: int):
+def make_handler(csv_path: str, refresh: int, cidrs: list, ap_cidr: str):
     class Handler(BaseHTTPRequestHandler):
         def _send(self, code, body: bytes, ctype: str):
             self.send_response(code)
@@ -346,12 +461,37 @@ def make_handler(csv_path: str, refresh: int):
             self.end_headers()
             self.wfile.write(body)
 
+        def _allowed(self) -> bool:
+            return client_allowed(self.client_address[0], cidrs)
+
+        def _page(self, notice: str = "", code: int = 200):
+            s = summarize(load(csv_path))
+            body = render(s, csv_path, refresh, list_radios(), self._allowed(),
+                          ap_cidr, notice).encode()
+            self._send(code, body, "text/html; charset=utf-8")
+
+        def _same_origin(self) -> bool:
+            """Reject cross-site form posts.
+
+            The controls are unauthenticated and reachable from the AP, so without
+            this a page in any other tab could submit the reboot form on the
+            viewer's behalf. Browsers always send Origin on a form POST; a missing
+            Origin means it did not come from a browser form (curl, etc.), which
+            is already limited by the subnet check.
+            """
+            origin = self.headers.get("Origin")
+            if not origin:
+                return True
+            try:
+                return urllib.parse.urlparse(origin).netloc == self.headers.get("Host")
+            except ValueError:
+                return False
+
         def do_GET(self):
             path = self.path.split("?", 1)[0]
             try:
                 if path in ("/", "/index.html"):
-                    s = summarize(load(csv_path))
-                    self._send(200, render(s, csv_path, refresh).encode(), "text/html; charset=utf-8")
+                    self._page()
                 elif path == "/data.json":
                     s = summarize(load(csv_path))
                     s.pop("current", None)
@@ -363,6 +503,47 @@ def make_handler(csv_path: str, refresh: int):
                     self._send(404, b"not found\n", "text/plain; charset=utf-8")
             except Exception as exc:  # a bad CSV row must not take the page down
                 self._send(500, f"error: {exc}\n".encode(), "text/plain; charset=utf-8")
+
+        def do_POST(self):
+            path = self.path.split("?", 1)[0]
+            if not path.startswith("/restart/"):
+                self._send(404, b"not found\n", "text/plain; charset=utf-8")
+                return
+            # Subnet check first: never even parse a body from a client that is
+            # not permitted to act.
+            if not self._allowed():
+                self._send(403, b"restart is limited to the Pi's own AP subnet\n",
+                           "text/plain; charset=utf-8")
+                return
+            if not self._same_origin():
+                self._send(403, b"cross-origin request rejected\n",
+                           "text/plain; charset=utf-8")
+                return
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                form = urllib.parse.parse_qs(self.rfile.read(min(length, 4096)).decode())
+
+                if path == "/restart/pi":
+                    ok, msg = run_helper(["pi"])
+                    note = ("The Pi is rebooting. This access point drops for about a "
+                            "minute, then reconnect and reload.") if ok else f"Reboot failed: {msg}"
+                elif path == "/restart/radio":
+                    busid = (form.get("busid") or [""])[0]
+                    if not BUSID_RE.match(busid):
+                        self._page('<div class="notice bad">Invalid USB id.</div>', 400)
+                        return
+                    ok, msg = run_helper(["usb", busid])
+                    note = (f"Power-cycled USB {html.escape(busid)}. It re-enumerates in a "
+                            f"few seconds; a MeshCore node comes back with its clock reset."
+                            ) if ok else f"Power-cycle failed: {html.escape(msg)}"
+                else:
+                    self._send(404, b"not found\n", "text/plain; charset=utf-8")
+                    return
+
+                cls = "notice" if ok else "notice bad"
+                self._page(f'<div class="{cls}">{note}</div>')
+            except Exception as exc:
+                self._page(f'<div class="notice bad">Error: {html.escape(str(exc))}</div>', 500)
 
         def log_message(self, *a):  # keep the journal readable
             pass
@@ -378,10 +559,16 @@ def main() -> None:
     ap.add_argument("--host", default="0.0.0.0", help="bind address (default: all interfaces)")
     ap.add_argument("--port", type=int, default=8080)
     ap.add_argument("--refresh", type=int, default=60, help="page auto-refresh seconds")
+    ap.add_argument("--restart-from", default="10.13.37.0/24",
+                    help="comma-separated CIDRs allowed to use the restart controls "
+                         "(loopback is always allowed). Metrics stay readable to all.")
     args = ap.parse_args()
 
-    srv = ThreadingHTTPServer((args.host, args.port), make_handler(args.csv, args.refresh))
+    cidrs = [ipaddress.ip_network(c.strip()) for c in args.restart_from.split(",") if c.strip()]
+    srv = ThreadingHTTPServer((args.host, args.port),
+                              make_handler(args.csv, args.refresh, cidrs, args.restart_from))
     print(f"serving {args.csv} on http://{args.host}:{args.port}/  (no authentication)", flush=True)
+    print(f"restart controls limited to: {args.restart_from} (+loopback)", flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
